@@ -62,19 +62,14 @@ function love.keypressed(key)
 end
 
 function love.mousemoved(x,y)
-  placement.mouse_moved(x,y)
+  placement.mouse_moved(state,x,y)
 end
 
 function love.wheelmoved(x,y)
-  placement.wheel_moved(x,y)
+  placement.wheel_moved(state,x,y)
 end
 
 function love.mousepressed(x,y,button)
-  --local x, y, size, is_placed =
-  placement.mouse_pressed(x,y,button,state)
-  --if is_placed == true then
-  --  local new_gear = simulation.add_gear(state,size,{x=x,y=y})
-  --end
 
   local rect = renderer.get_buy_button_rect(state)
   local m_x, m_y = camera:worldCoords(x, y)
@@ -82,6 +77,17 @@ function love.mousepressed(x,y,button)
   if m_x >= rect[1] and m_x <= rect[1] + rect[3] and m_y >= rect[2] and m_y <= rect[2] + rect[4] then
     state.areas_available = state.areas_available + 1
     levels[1](state)
+  else
+    local result = placement.mouse_pressed(state,x,y,button)
+    if result and result.type then
+      if result.type == 'new' then
+        local new_gear = simulation.add_gear(state,result.size,result.position)
+        simulation.connect(result.source,new_gear)
+      elseif result.type == 'link' then
+        simulation.connect(result.source,result.target)
+      end
+
+    end
   end
 end
 

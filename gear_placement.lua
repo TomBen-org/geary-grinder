@@ -1,7 +1,9 @@
 local math2d = require("libs.vector-light")
+local collisions = require('collisions')
+local constants = require('constants')
 local placement = {}
 
-local constants = {
+local placement_constants = {
   build_inactive_color = {255,155,0},
   build_collision_color = {255,0,0},
   build_active_color = {0,255,0},
@@ -11,39 +13,22 @@ local constants = {
 local internals = {
   selected_gear = nil,
   new_gear_point = {x=0,y=0},
-  new_gear_radius = 1,
+  new_gear_size = 1,
   new_gear_valid = false,
   build_active = false
 }
 
-local update_new_gear_position = function(mx,my)
+local update_new_gear_position = function(state,mx,my)
   if not (mx and my) then
     mx, my = love.mouse.getPosition()
   end
   if internals.selected_gear then
     local cx,cy = internals.selected_gear.position.x,internals.selected_gear.position.y
     local angle_to = math2d.angleTo(mx-cx,my-cy)
-    local gx, gy = math2d.fromPolar(angle_to,(internals.selected_gear.size + internals.new_gear_radius) * constants.size_mod)
+    local gx, gy = math2d.fromPolar(angle_to,(internals.selected_gear.size + internals.new_gear_size) * constants.size_mod)
     internals.new_gear_point = {x=cx+gx,y=cy+gy}
+    internals.new_gear_valid = #collisions.collide_circle_with_state(state,internals.new_gear_point.x,internals.new_gear_point.y,internals.new_gear_size) == 0
   end
-end
-
-local check_collisions_with_list = function(x,y,radius,collider_list)
-  for _, collider in pairs(collider_list) do
-    if math2d.dist(x,y,collider.position.x,collider.position.y) < collider.size + radius then
-      return true
-    end
-  end
-  return false
-end
-
-local find_gear_under_position = function(x,y,state) 
-  for _, component in pairs(state.all_components) do
-    if math2d.dist(x,y,component.position.x,component.position.y) < component.size*constants.size_mod then
-      return component
-    end
-  end
-  return nil
 end
 
 placement.load = function()
@@ -54,8 +39,9 @@ placement.load = function()
   }
 end
 
-placement.mouse_pressed = function(x,y,button,state)
-  local target_gear = find_gear_under_position(x,y,state)
+placement.mouse_pressed = function(state,x,y,button)
+  local result = nil
+  local target_gear = collisions.find_component_at(state,x,y)
   if target_gear then
     print("clicked on a "..target_gear.type)
   end
@@ -64,68 +50,78 @@ placement.mouse_pressed = function(x,y,button,state)
     internals.selected_gear = target_gear
   elseif button == 1 and internals.selected_gear then
     local selected = internals.selected_gear
+    local point = internals.new_gear_point
+    local size = internals.new_gear_size
     --check if the mouse collides with a different gear
     if target_gear then
       --connect two gears with a chain
-    elseif check_collisions_with_list(selected.position.x,selected.position.y,selected.size*constants.size_mod,state.all_components) then
+      result = {type='connect',source = selected,target = target_gear}
+      selected = nil
+    elseif #collisions.collide_circle_with_state(state,point.x,point.y,size) == 0 then
       --place a new gear and select it
+      result = {type = 'new',source = selected, position = point, size = size}
+      selected = nil
     end
   elseif button == 2 then
     --cancel action logic
     internals.selected_gear = nil
   end
 
-  update_new_gear_position()
+  update_new_gear_position(state)
+
+  return result
 end
 
-placement.mouse_moved = function(x,y)
-  update_new_gear_position(x,y)
-end
+placement.mouse_moved = function(state,x,y)
+  local target_gear = collisions.find_component_at(state,x,y)
 
-placement.wheel_moved = function (x,y)
-  if y > 0 and internals.new_gear_radius < 3 then
-    internals.new_gear_radius = internals.new_gear_radius + 1
-  elseif y < 0 and internals.new_gear_radius > 1 then
-    internals.new_gear_radius = internals.new_gear_radius - 1
+  if target_gear and internals.selected_gear and not (target_gear == internals.selected_gear) then
+    internals.target_gear = target_gear
+  elseif target_gear == nil then
+    internals.target_gear = nil
   end
-  update_new_gear_position()
+  update_new_gear_position(state,x,y)
+end
+
+placement.wheel_moved = function (state,x,y)
+  if y > 0 and internals.new_gear_size < 3 then
+    internals.new_gear_size = internals.new_gear_size + 1
+  elseif y < 0 and internals.new_gear_size > 1 then
+    internals.new_gear_size = internals.new_gear_size - 1
+  end
+  update_new_gear_position(state)
 end
 
 
-placement.draw = function(colliders)
-  local pos = internals.connection_point
-  local sw,sh = love.graphics.getDimensions()
-
+placement.draw = function()
   if internals.selected_gear then
     --highlight selected_gear
     local selected = internals.selected_gear
-    love.graphics.setColor(constants.build_active_color)
-    print(selected.position.x)
+    love.graphics.setColor(placement_constants.build_active_color)
     love.graphics.circle("line",selected.position.x,selected.position.y,(selected.size*constants.size_mod)-1,50)
-    --draw new_gear_radius
-    local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
-    love.graphics.circle("line",gx,gy,internals.new_gear_radius*constants.size_mod,50)
+
+    if internals.target_gear then
+      --draw link option
+      if internals.target_gear.child then
+        love.graphics.setColor(placement_constants.build_active_color)
+      else
+        love.graphics.setColor(placement_constants.build_collision_color)
+      end
+      love.graphics.line(internals.target_gear.position.x,internals.target_gear.position.y,selected.position.x,selected.position.y)
+      love.graphics.circle("line",internals.target_gear.position.x,internals.target_gear.position.y,(internals.target_gear.size*constants.size_mod)-1,50)
+    else
+      --draw new_gear_radius
+      if internals.new_gear_valid then
+        love.graphics.setColor(placement_constants.build_active_color)
+      else
+        love.graphics.setColor(placement_constants.build_collision_color)
+      end
+      local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
+      love.graphics.circle("line",gx,gy,internals.new_gear_size*constants.size_mod,50)
+    end
+
   end
 
-  --if internals.build_active then
-  --  local gx, gy = internals.new_gear_point.x, internals.new_gear_point.y
-  --  if check_collisions_with_list(gx,gy,internals.new_gear_radius,colliders) then
-  --    love.graphics.setColor(constants.build_collision_color)
-  --  else
-  --    love.graphics.setColor(constants.build_active_color)
-  --  end
-  --    --draw the line between connection_point and mouse
-  --    local cx, cy = internals.connection_point.x,internals.connection_point.y
-  --  love.graphics.line(gx, gy, cx, cy)
-  --  --draw the new gear
-  --  local gx,gy = internals.new_gear_point.x,internals.new_gear_point.y
-  --  love.graphics.circle("line",gx,gy,internals.new_gear_radius,50)
-  --else
-  --  love.graphics.setColor(constants.build_inactive_color)
-  --end
-  --
-  ----draw the connection_point
-  --love.graphics.circle("line",pos.x,pos.y,internals.connection_radius,50)
 end
 
 
