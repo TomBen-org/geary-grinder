@@ -77,7 +77,7 @@ placement.mouse_pressed = function(state,x,y,button)
       result = {type = 'new',source = selected, position = point, size = size}
     end
   elseif button == 2 then
-    if (state.selected_tool == 'gear' or state.selected_tool == 'splitter') and not internals.selected_gear and target_gear and target_gear.type == "gear" or target_gear.type == "splitter_input" then
+    if (state.selected_tool == 'gear' or state.selected_tool == 'splitter') and (not internals.selected_gear) and target_gear and (target_gear.type == "gear" or target_gear.type == "splitter_input") then
       result = {type = 'remove', target=target_gear}
     end
 
