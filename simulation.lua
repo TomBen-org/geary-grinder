@@ -16,7 +16,7 @@ simulation.add_source = function(state, name, size, speed, position)
     type = "source",
     name = name,
     size = size,
-    speed = speed,
+    current_speed = speed,
     position = position,
     child = nil,
   }
@@ -31,7 +31,7 @@ simulation.update_source = function(source)
   assert(source.type == "source")
 
   if source.child then
-    simulation.update_recursive(source.child, source.size, source.speed)
+    simulation.update_recursive(source.child, source.size, source.current_speed)
   end
 end
 
