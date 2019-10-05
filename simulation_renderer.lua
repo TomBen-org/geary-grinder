@@ -20,6 +20,40 @@ local render_constants = {
   }
 }
 
+local draw_gear = function(gear)
+  local pos = gear.position
+	-- rotate around the center of the screen by angle radians
+  local transform = love.math.newTransform()
+  transform:translate(pos.x,pos.y)
+  transform:rotate(gear.rotation)
+  transform:translate(-pos.x,-pos.y)
+  love.graphics.push()
+  love.graphics.applyTransform(transform)
+
+  --draw everything as normal
+  --draw body
+	love.graphics.setColor(render_constants.colors['gear'])
+  love.graphics.circle('fill',pos.x,pos.y,(gear.size*constants.size_mod)-constants.whole_depth/2,30)
+
+  --draw teeth
+  local quantity = gear.size * constants.teeth_per_size
+  local pitch = math.pi*2/quantity
+
+  --love.graphics.arc("fill","pie",pos.x,pos.y,gear.size*constants.size_mod*1.3,i*pitch,(i+1)*pitch,5)
+  --love.graphics.arc("fill","pie",pos.x,pos.y,gear.size*constants.size_mod*1.3,3*pitch,4*pitch,5)
+
+  for i=1, quantity/2 do
+    local k = i*2
+    love.graphics.arc("fill","pie",pos.x,pos.y,(gear.size*constants.size_mod)+constants.working_depth/2,k*pitch,((k+1)*pitch),5)
+  end
+
+	love.graphics.setPointSize(5)
+	love.graphics.setColor(0, 0, 0)
+	love.graphics.points(pos.x, pos.y)
+
+  love.graphics.pop()
+end
+
 renderer.render_areas = function(state, camera)
   local _, y_offset = camera:worldCoords(0, 0)
 
@@ -105,11 +139,16 @@ renderer.draw = function(state)
     love.graphics.setColor(render_constants.colors[component.type] or render_constants.colors['other'])
     love.graphics.circle('line',component.position.x,component.position.y,component.size * constants.size_mod,50)
     love.graphics.print(tostring(component.current_speed),component.position.x,component.position.y)
+    if component.type == 'gear' then
+      draw_gear(component)
+    end
     if component.child then
       love.graphics.setColor(render_constants.colors["link"])
       love.graphics.line(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
     end
   end
 end
+
+
 
 return renderer

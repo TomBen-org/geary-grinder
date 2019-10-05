@@ -119,4 +119,5 @@ function love.update(deltaTime)
     simulation.update(state)
     accumulatedDeltaTime = accumulatedDeltaTime - tickTime
   end
+
 end

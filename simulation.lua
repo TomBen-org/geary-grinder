@@ -1,3 +1,5 @@
+local constants = require('constants')
+
 local simulation = {}
 
 simulation.create_state = function()
@@ -21,6 +23,7 @@ simulation.add_source = function(state, name, size, speed, position)
     size = size,
     current_speed = speed,
     position = position,
+    rotation = 0,
     child = nil,
   }
 
@@ -81,6 +84,7 @@ simulation.add_sink_part = function(state, sink, name, size, speed_min, speed_ma
     speed_min = speed_min,
     speed_max = speed_max,
     position = position,
+    rotation = 0,
     parent = nil,
     satisfied = false,
     current_speed = 0,
@@ -108,6 +112,7 @@ simulation.add_gear = function(state, size, position)
     parent = nil,
     child = nil,
     current_speed = 0,
+    rotation = 0,
   }
 
   table.insert(state.all_components, new_gear)
@@ -119,7 +124,7 @@ simulation.update_gear = function(gear, parent_size, parent_speed)
   assert(gear.type == "gear")
 
   gear.current_speed = -(parent_speed * (parent_size / gear.size))
-
+  gear.rotation = gear.rotation + (gear.current_speed*math.pi/1000)
   if gear.child then
     simulation.update_recursive(gear.child, gear.size, gear.current_speed)
   end
@@ -174,6 +179,7 @@ simulation.connect = function(parent, child)
   assert(simulation.can_connect(parent, child))
   parent.child = child
   child.parent = parent
+  child.rotation = parent.rotation + math.pi*2/constants.teeth_per_size
 end
 
 

@@ -9,7 +9,10 @@ local constants =
   money_size_scaler = 500,
   area_size = 300,
   size_mod = 15,
-  max_gear_size = 8
+  max_gear_size = 8,
+  teeth_per_size = 6,
+  working_depth = 6,
+  whole_depth = 14,
 }
 
 return constants
