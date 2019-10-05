@@ -15,6 +15,8 @@ local render_constants = {
     ["grid_color"] = {0.9,0.9,0.9},
     ["buy_area_unavailable"] = {1, 0, 0},
     ["buy_area_available"] = {0, 1, 0},
+    ["left_bar_button"] = {0.5, 0.5, 0.5},
+    ["selected_left_bar_button"] = {0.75, 0.75, 0.75},
   }
 }
 
@@ -29,18 +31,19 @@ renderer.render_areas = function(state, camera)
     local level = constants.screen_h - current * constants.area_size
 
     love.graphics.setColor(render_constants.colors.grid_color)
-    love.graphics.line(0, level, constants.screen_w - constants.right_bar, level)
+    love.graphics.line(constants.left_bar, level, constants.screen_w - constants.right_bar, level)
     current = current + 1
   end
 end
 
-renderer.render_money_background = function()
+renderer.render_gui_background = function()
   love.graphics.setColor(render_constants.colors.money_background)
   love.graphics.rectangle('fill', constants.screen_w - constants.right_bar, 0, constants.right_bar, constants.screen_h)
+  love.graphics.rectangle('fill', 0, 0, constants.left_bar, constants.screen_h)
 end
 
 renderer.get_buy_button_rect = function(state)
-  return {constants.screen_w - constants.right_bar + 20, constants.screen_h - constants.area_size * (state.areas_available+1), constants.right_bar - 40, constants.area_size}
+  return {constants.screen_w - constants.right_bar + 20, constants.screen_h - constants.area_size * (state.areas_available), constants.right_bar - 40, 100}
 end
 
 renderer.render_money_bar = function(state)
@@ -51,6 +54,45 @@ renderer.render_money_bar = function(state)
   love.graphics.setColor(render_constants.colors.buy_area_available)
   local rect = renderer.get_buy_button_rect(state)
   love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
+
+  love.graphics.setColor{0,0,0}
+  local text = love.graphics.newText(love.graphics.getFont(), "Buy\nnext\narea")
+  local textWidth, textHeight = text:getDimensions()
+  love.graphics.draw(text, rect[1] + rect[3]/2 - textWidth/2, rect[2] + rect[4]/2 - textHeight/2)
+end
+
+renderer.get_left_button_rects = function()
+  local rects = {}
+
+  local buttonMargin = 10
+
+  local current_y = 100
+  for _, name in pairs{"gear", "chain", "splitter"} do
+    rects[name] =
+    {
+      buttonMargin,
+      current_y,
+      constants.left_bar - buttonMargin*2,
+      constants.left_bar - buttonMargin*2,
+    }
+
+    current_y = current_y + constants.left_bar - buttonMargin
+  end
+
+  return rects
+end
+
+renderer.render_render_left_gui = function(state)
+  for name, rect in pairs(renderer.get_left_button_rects()) do
+    if name == state.selected_tool then
+      love.graphics.setColor(render_constants.colors.selected_left_bar_button)
+    else
+      love.graphics.setColor(render_constants.colors.left_bar_button)
+    end
+    love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
+    love.graphics.setColor{0,0,0}
+    love.graphics.print(name, rect[1], rect[2])
+  end
 end
 
 renderer.render_money_amount = function(state)

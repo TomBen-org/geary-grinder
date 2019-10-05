@@ -9,6 +9,7 @@ simulation.create_state = function()
     all_components = {},
     money = 0,
     areas_available = 1,
+    selected_tool = "gear",
   }
 end
 

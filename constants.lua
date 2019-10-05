@@ -3,7 +3,8 @@ local constants =
   screen_w = 1024,
   screen_h = 768,
 
-  right_bar = 200,
+  left_bar = 100,
+  right_bar = 100,
 
   money_size_scaler = 500,
   area_size = 300,

@@ -3,7 +3,7 @@ local constants = require('constants')
 
 local levels = {}
 
-local left = 100
+local left = constants.left_bar + 100
 local right = constants.screen_w - constants.right_bar - 100
 
 

@@ -28,7 +28,7 @@ end
 function love.draw()
   love.graphics.clear({0,0.34,0.73})
 
-  renderer.render_money_background()
+  renderer.render_gui_background()
 
   camera:attach()
   --do camera relative drawing here
@@ -41,6 +41,7 @@ function love.draw()
   --do window relative drawing here
   love.graphics.print(camera.x..","..camera.y,10,10)
   renderer.render_money_amount(state)
+  renderer.render_render_left_gui(state)
 end
 
 function love.resize()
@@ -70,11 +71,22 @@ function love.wheelmoved(x,y)
 end
 
 function love.mousepressed(x,y,button)
+  local rect_clicked = function(rect)
+    local m_x, m_y = camera:worldCoords(x, y)
+    return m_x >= rect[1] and m_x <= rect[1] + rect[3] and m_y >= rect[2] and m_y <= rect[2] + rect[4]
+  end
 
-  local rect = renderer.get_buy_button_rect(state)
-  local m_x, m_y = camera:worldCoords(x, y)
+  local buy_button = renderer.get_buy_button_rect(state)
+  local left_gui_buttons = renderer.get_left_button_rects()
 
-  if m_x >= rect[1] and m_x <= rect[1] + rect[3] and m_y >= rect[2] and m_y <= rect[2] + rect[4] then
+  for name, rect in pairs(left_gui_buttons) do
+    if rect_clicked(rect) then
+      state.selected_tool = name
+      return
+    end
+  end
+
+  if rect_clicked(buy_button) then
     state.areas_available = state.areas_available + 1
     levels[1](state)
   else
@@ -88,7 +100,6 @@ function love.mousepressed(x,y,button)
         simulation.connect(result.source,result.target)
         placement.select_component(result.target)
       end
-
     end
   end
 end
