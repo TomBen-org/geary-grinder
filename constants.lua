@@ -7,7 +7,8 @@ local constants =
 
   money_size_scaler = 500,
   area_size = 300,
-  size_mod = 30
+  size_mod = 15,
+  max_gear_size = 8
 }
 
 return constants

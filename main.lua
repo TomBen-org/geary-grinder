@@ -83,8 +83,10 @@ function love.mousepressed(x,y,button)
       if result.type == 'new' then
         local new_gear = simulation.add_gear(state,result.size,result.position)
         simulation.connect(result.source,new_gear)
-      elseif result.type == 'link' then
+        placement.select_component(new_gear)
+      elseif result.type == 'connect' then
         simulation.connect(result.source,result.target)
+        placement.select_component(result.target)
       end
 
     end

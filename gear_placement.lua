@@ -39,6 +39,10 @@ placement.load = function()
   }
 end
 
+placement.select_component = function(component)
+  internals.selected_gear = component
+end
+
 placement.mouse_pressed = function(state,x,y,button)
   local result = nil
   local target_gear = collisions.find_component_at(state,x,y)
@@ -53,7 +57,7 @@ placement.mouse_pressed = function(state,x,y,button)
     local point = internals.new_gear_point
     local size = internals.new_gear_size
     --check if the mouse collides with a different gear
-    if target_gear then
+    if target_gear and not(target_gear == selected) then
       --connect two gears with a chain
       result = {type='connect',source = selected,target = target_gear}
       selected = nil
@@ -84,7 +88,7 @@ placement.mouse_moved = function(state,x,y)
 end
 
 placement.wheel_moved = function (state,x,y)
-  if y > 0 and internals.new_gear_size < 3 then
+  if y > 0 and internals.new_gear_size < constants.max_gear_size then
     internals.new_gear_size = internals.new_gear_size + 1
   elseif y < 0 and internals.new_gear_size > 1 then
     internals.new_gear_size = internals.new_gear_size - 1
