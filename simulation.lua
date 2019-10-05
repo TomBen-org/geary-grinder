@@ -67,7 +67,7 @@ simulation.update_sink = function(state, sink)
   end
 end
 
-simulation.add_sink_part = function(sink, name, size, speed_min, speed_max, position)
+simulation.add_sink_part = function(state, sink, name, size, speed_min, speed_max, position)
   assert(sink.type == "sink")
 
   local new_sink_component =
@@ -84,6 +84,7 @@ simulation.add_sink_part = function(sink, name, size, speed_min, speed_max, posi
   }
 
   table.insert(sink.components, new_sink_component)
+  table.insert(state.all_components, new_sink_component)
 
   return new_sink_component
 end
