@@ -5,6 +5,7 @@ simulation.create_state = function()
   {
     sources = {},
     sinks = {},
+    splitters = {},
     all_components = {},
     money = 0,
   }
@@ -122,6 +123,47 @@ simulation.update_gear = function(gear, parent_size, parent_speed)
   end
 end
 
+simulation.add_splitter = function(state, position)
+  local splitter_input =
+  {
+    type = "splitter_input",
+    size = 1,
+    position = {x = position.x, y = position.y - 40},
+    parent = nil,
+    outputs = {},
+    current_speed = 0,
+  }
+  table.insert(state.all_components, splitter_input)
+
+  local output_1 = simulation.add_gear(state, 1, {x = position.x - 40, y = position.y + 30})
+  local output_2 = simulation.add_gear(state, 1, {x = position.x + 40, y = position.y + 30})
+  table.insert(splitter_input.outputs, output_1)
+  table.insert(splitter_input.outputs, output_2)
+  output_1.parent = splitter_input
+  output_2.parent = splitter_input
+
+  local new_splitter =
+  {
+    type = "splitter",
+    position = position,
+    input = splitter_input,
+  }
+
+  table.insert(state.splitters, new_splitter)
+
+  return new_splitter
+end
+
+simulation.update_splitter_input = function(splitter_input, parent_size, parent_speed)
+  assert(splitter_input.type == "splitter_input")
+
+  splitter_input.current_speed = -(parent_speed * (parent_size / splitter_input.size))
+
+  for _, child in pairs(splitter_input.outputs) do
+    simulation.update_recursive(child, splitter_input.size, -splitter_input.current_speed / 2)
+  end
+end
+
 simulation.can_connect = function (parent, child)
   return parent.type ~= "sink" and child.type ~= "source" and parent.child == nil and child.parent == nil
 end
@@ -140,6 +182,8 @@ simulation.update_recursive = function(component, parent_size, parent_speed)
     simulation.update_sink_part(component, parent_size, parent_speed)
   elseif component.type == "gear" then
     simulation.update_gear(component, parent_size, parent_speed)
+  elseif component.type == "splitter_input" then
+    simulation.update_splitter_input(component, parent_size, parent_speed)
   else
     error("bad component type: " .. component.type)
   end

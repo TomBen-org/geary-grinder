@@ -2,22 +2,18 @@ local placement = require('gear_placement')
 require('registry')
 local simulation = require('simulation')
 local renderer = require('simulation_renderer')
-
-local test_gear
+local puzzles = require('puzzles')
 
 local state
 
 function love.load()
   state = simulation.create_state()
 
-  local screen_width, screen_height = love.graphics.getDimensions()
-  local source = simulation.add_source(state, "basic_source", 2, 5, {x = 50, y = 50})
-  local sink = simulation.add_sink(state, "basic_sink", {x = 50, y = 50}, 1)
-  simulation.add_sink_part(state, sink, "basic_sink_part_1", 1, 4,6, {x = 200, y = 50})
+  for _, puzzle in pairs(puzzles) do
+    puzzle(state)
+  end
 
-  test_gear = simulation.add_gear(state, 1, {x=100, y=50})
-  simulation.connect(source, test_gear)
-  simulation.connect(test_gear, sink.components[1])
+  local screen_width, screen_height = love.graphics.getDimensions()
 
   for _=1, 100 do
     table.insert(circles,{shape='circle',x=math.random()*screen_width,y=math.random()*screen_height,radius=math.random(1,10)})
@@ -69,7 +65,4 @@ end
 
 function love.update(dt)
   simulation.update(state)
-
-  print(test_gear.current_speed)
-  print(state.sinks[1].components[1].current_speed)
 end
