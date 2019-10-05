@@ -8,6 +8,7 @@ simulation.create_state = function()
     splitters = {},
     all_components = {},
     money = 0,
+    areas_available = 1,
   }
 end
 
@@ -20,7 +21,6 @@ simulation.add_source = function(state, name, size, speed, position)
     current_speed = speed,
     position = position,
     child = nil,
-    areas_available = 1,
   }
 
   table.insert(state.sources, new_source)

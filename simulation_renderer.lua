@@ -14,6 +14,8 @@ local render_constants = {
     ["money_background"] = {0.3, 0.3, 0.3},
     ["money_foreground"] = {1, 1, 0},
     ["grid_color"] = {0.9,0.9,0.9},
+    ["buy_area_unavailable"] = {1, 0, 0},
+    ["buy_area_available"] = {0, 1, 0},
   }
 }
 
@@ -21,7 +23,7 @@ renderer.render_areas = function(state, camera)
   local _, y_offset = camera:worldCoords(0, 0)
 
   local highest = math.ceil((constants.screen_h-y_offset) / constants.area_size)
-  local lowest = highest - math.floor(constants.screen_h / constants.area_size)
+  local lowest = highest - math.ceil(constants.screen_h / constants.area_size)
 
   local current = lowest
   while current <= highest do
@@ -38,10 +40,18 @@ renderer.render_money_background = function()
   love.graphics.rectangle('fill', constants.screen_w - constants.right_bar, 0, constants.right_bar, constants.screen_h)
 end
 
+renderer.get_buy_button_rect = function(state)
+  return {constants.screen_w - constants.right_bar + 20, constants.screen_h - constants.area_size * (state.areas_available+1), constants.right_bar - 40, constants.area_size}
+end
+
 renderer.render_money_bar = function(state)
   local money_height = state.money / constants.money_size_scaler
   love.graphics.setColor(render_constants.colors.money_foreground)
   love.graphics.rectangle('fill', constants.screen_w - constants.right_bar, constants.screen_h - money_height, constants.right_bar, money_height)
+
+  love.graphics.setColor(render_constants.colors.buy_area_available)
+  local rect = renderer.get_buy_button_rect(state)
+  love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
 end
 
 renderer.render_money_amount = function(state)
