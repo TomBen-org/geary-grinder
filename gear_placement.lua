@@ -49,6 +49,12 @@ placement.mouse_pressed = function(state,x,y,button)
   if target_gear then
     print("clicked on a "..target_gear.type)
   end
+
+  if button == 1 and state.selected_tool == 'splitter' then
+    -- TODO: collision check this
+    result = {type = 'new_splitter', position = {x = x, y = y}}
+  end
+
   if button == 1 and not internals.selected_gear then
     --select gear
     if target_gear == nil then
@@ -71,7 +77,7 @@ placement.mouse_pressed = function(state,x,y,button)
       result = {type = 'new',source = selected, position = point, size = size}
     end
   elseif button == 2 then
-    if state.selected_tool == 'gear' and not internals.selected_gear and target_gear and target_gear.type == "gear" then
+    if (state.selected_tool == 'gear' or state.selected_tool == 'splitter') and not internals.selected_gear and target_gear and target_gear.type == "gear" or target_gear.type == "splitter_input" then
       result = {type = 'remove', target=target_gear}
     end
 

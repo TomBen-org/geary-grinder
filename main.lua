@@ -109,6 +109,8 @@ function love.mousepressed(x,y,button)
       elseif result.type == 'disconnect_belt' then
         placement.select_component(result.target.parent)
         simulation.disconnect_belt(result.target)
+      elseif result.type == 'new_splitter' then
+        simulation.add_splitter(state, result.position)
       end
     end
   end

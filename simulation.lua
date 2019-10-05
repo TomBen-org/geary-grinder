@@ -150,6 +150,8 @@ simulation.add_splitter = function(state, position)
     connection_type = 'none',
     outputs = {},
     current_speed = 0,
+    rotation = 0,
+    splitter = nil,
   }
   table.insert(state.all_components, splitter_input)
 
@@ -159,6 +161,8 @@ simulation.add_splitter = function(state, position)
   table.insert(splitter_input.outputs, output_2)
   output_1.parent = splitter_input
   output_2.parent = splitter_input
+  output_1.connection_type = "splitter"
+  output_2.connection_type = "splitter"
 
   local new_splitter =
   {
@@ -166,8 +170,8 @@ simulation.add_splitter = function(state, position)
     position = position,
     input = splitter_input,
   }
-
   table.insert(state.splitters, new_splitter)
+  splitter_input.splitter = new_splitter
 
   return new_splitter
 end
@@ -179,6 +183,8 @@ simulation.update_splitter_input = function(splitter_input, parent_size, parent_
   if splitter_input.connection_type ~= 'belt' then
     splitter_input.current_speed = -splitter_input.current_speed
   end
+
+  splitter_input.rotation = splitter_input.rotation + (splitter_input.current_speed*math.pi/1000)
 
   for _, child in pairs(splitter_input.outputs) do
     simulation.update_recursive(child, splitter_input.size, -splitter_input.current_speed / 2)
@@ -197,13 +203,30 @@ simulation.connect = function(parent, child, type)
   child.connection_type = type
 end
 
-simulation.remove = function(state, to_remove)
+simulation.remove = function(state, to_remove, _from_splitter_input)
+  if to_remove.connection_type == 'splitter' and not _from_splitter_input then
+    assert(to_remove.parent and to_remove.parent.type == "splitter_input")
+    simulation.remove(state, to_remove.parent)
+  end
+
+  if to_remove.type == 'splitter_input' then
+    simulation.remove(state, to_remove.outputs[1], true)
+    simulation.remove(state, to_remove.outputs[2], true)
+
+    for index, item in pairs(state.splitters) do
+      if item == to_remove.splitter then
+        table.remove(state.splitters, index)
+        break
+      end
+    end
+  end
+
   if to_remove.child then
     to_remove.child.parent = nil
     to_remove.child.connection_type = 'none'
   end
 
-  if to_remove.parent then
+  if to_remove.parent and not _from_splitter_input then
     to_remove.parent.child = nil
   end
 
