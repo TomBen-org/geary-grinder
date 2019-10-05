@@ -86,6 +86,7 @@ simulation.add_sink_part = function(state, sink, name, size, speed_min, speed_ma
     position = position,
     rotation = 0,
     parent = nil,
+    connection_type = 'none',
     satisfied = false,
     current_speed = 0,
   }
@@ -98,7 +99,11 @@ end
 
 simulation.update_sink_part = function(sink_part, parent_size, parent_speed)
   assert(sink_part.type == "sink_part")
-  sink_part.current_speed = -(parent_speed * (parent_size / sink_part.size))
+  sink_part.current_speed = parent_speed * (parent_size / sink_part.size)
+  if sink_part.connection_type ~= 'belt' then
+    sink_part.current_speed = -sink_part.current_speed
+  end
+
   sink_part.satisfied = sink_part.current_speed >= sink_part.speed_min and sink_part.current_speed <= sink_part.speed_max
   sink_part.rotation = sink_part.rotation + (sink_part.current_speed*math.pi/1000)
 end
@@ -111,6 +116,7 @@ simulation.add_gear = function(state, size, position)
     position = position,
     parent = nil,
     child = nil,
+    connection_type = 'none',
     current_speed = 0,
     rotation = 0,
   }
@@ -123,7 +129,11 @@ end
 simulation.update_gear = function(gear, parent_size, parent_speed)
   assert(gear.type == "gear")
 
-  gear.current_speed = -(parent_speed * (parent_size / gear.size))
+  gear.current_speed = parent_speed * (parent_size / gear.size)
+  if gear.connection_type ~= 'belt' then
+    gear.current_speed = -gear.current_speed
+  end
+
   gear.rotation = gear.rotation + (gear.current_speed*math.pi/1000)
   if gear.child then
     simulation.update_recursive(gear.child, gear.size, gear.current_speed)
@@ -137,6 +147,7 @@ simulation.add_splitter = function(state, position)
     size = 1,
     position = {x = position.x, y = position.y - 40},
     parent = nil,
+    connection_type = 'none',
     outputs = {},
     current_speed = 0,
   }
@@ -164,7 +175,10 @@ end
 simulation.update_splitter_input = function(splitter_input, parent_size, parent_speed)
   assert(splitter_input.type == "splitter_input")
 
-  splitter_input.current_speed = -(parent_speed * (parent_size / splitter_input.size))
+  splitter_input.current_speed = parent_speed * (parent_size / splitter_input.size)
+  if splitter_input.connection_type ~= 'belt' then
+    splitter_input.current_speed = -splitter_input.current_speed
+  end
 
   for _, child in pairs(splitter_input.outputs) do
     simulation.update_recursive(child, splitter_input.size, -splitter_input.current_speed / 2)
@@ -175,11 +189,12 @@ simulation.can_connect = function (parent, child)
   return parent.type ~= "sink" and child.type ~= "source" and parent.child == nil and child.parent == nil
 end
 
-simulation.connect = function(parent, child)
+simulation.connect = function(parent, child, type)
   assert(simulation.can_connect(parent, child))
   parent.child = child
   child.parent = parent
   child.rotation = parent.rotation + math.pi*2/constants.teeth_per_size
+  child.connection_type = type
 end
 
 

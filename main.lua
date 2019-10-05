@@ -95,14 +95,13 @@ function love.mousepressed(x,y,button)
       if result.type == 'new' then
         local new_gear = simulation.add_gear(state,result.size,result.position)
         if result.source then
-          simulation.connect(result.source,new_gear)
+          simulation.connect(result.source,new_gear,"gear")
         end
         placement.select_component(new_gear)
       elseif result.type == 'connect' then
-        simulation.connect(result.source,result.target)
+        simulation.connect(result.source,result.target, "belt")
         placement.select_component(nil)
         if result.target.type == "gear" and result.target.child == nil then
-          print("T")
           placement.select_component(result.target)
         end
       end
