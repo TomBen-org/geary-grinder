@@ -4,7 +4,7 @@ require('registry')
 function love.load()
   local screen_width, screen_height = love.graphics.getDimensions()
   for _=1, 100 do
-    table.insert(circles,{x=math.random()*screen_width,y=math.random()*screen_height})
+    table.insert(circles,{shape='circle',x=math.random()*screen_width,y=math.random()*screen_height,radius=math.random(1,10)})
   end
 
   placement.load()
@@ -13,10 +13,10 @@ end
 function love.draw()
   for _, circle in pairs(circles) do
     love.graphics.setColor(circle_constants.color)
-    love.graphics.circle("fill",circle.x,circle.y,circle_constants.radius,10)
+    love.graphics.circle("fill",circle.x,circle.y,circle.radius,10)
   end
 
-  placement.draw()
+  placement.draw(circles)
 end
 
 function love.resize()

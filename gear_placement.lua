@@ -2,7 +2,8 @@ local math2d = require("libs.vector-light")
 local placement = {}
 
 local constants = {
-  build_inactive_color = {255,0,0},
+  build_inactive_color = {255,155,0},
+  build_collision_color = {255,0,0},
   build_active_color = {0,255,0},
 }
 
@@ -24,6 +25,15 @@ local update_new_gear_position = function(mx,my)
     local gx, gy = math2d.fromPolar(angle_to,internals.connection_radius + internals.new_gear_radius)
     internals.new_gear_point = {x=cx+gx,y=cy+gy}
   end
+end
+
+local check_collisions_with_list = function(x,y,radius,collider_list)
+  for _, collider in pairs(collider_list) do
+    if collider.shape == 'circle' and math2d.dist(x,y,collider.x,collider.y) < collider.radius + radius then
+      return true
+    end
+  end
+  return false
 end
 
 placement.load = function()
@@ -58,14 +68,18 @@ placement.wheel_moved = function (x,y)
 end
 
 
-placement.draw = function()
+placement.draw = function(colliders)
   local pos = internals.connection_point
 
   if internals.build_active then
-    love.graphics.setColor(constants.build_active_color)
-    --draw the line between connection_point and mouse
-    local cx, cy = internals.connection_point.x,internals.connection_point.y
     local gx, gy = internals.new_gear_point.x, internals.new_gear_point.y
+    if check_collisions_with_list(gx,gy,internals.new_gear_radius,colliders) then
+      love.graphics.setColor(constants.build_collision_color)
+    else
+      love.graphics.setColor(constants.build_active_color)
+    end
+      --draw the line between connection_point and mouse
+      local cx, cy = internals.connection_point.x,internals.connection_point.y
     love.graphics.line(gx, gy, cx, cy)
     --draw the new gear
     local gx,gy = internals.new_gear_point.x,internals.new_gear_point.y
