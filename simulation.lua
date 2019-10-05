@@ -35,7 +35,7 @@ end
 
 simulation.update_source = function(source)
   assert(source.type == "source")
-
+  source.rotation = source.rotation + (source.current_speed*math.pi/1000)
   if source.child then
     simulation.update_recursive(source.child, source.size, source.current_speed)
   end
@@ -98,9 +98,9 @@ end
 
 simulation.update_sink_part = function(sink_part, parent_size, parent_speed)
   assert(sink_part.type == "sink_part")
-
   sink_part.current_speed = -(parent_speed * (parent_size / sink_part.size))
   sink_part.satisfied = sink_part.current_speed >= sink_part.speed_min and sink_part.current_speed <= sink_part.speed_max
+  sink_part.rotation = sink_part.rotation + (sink_part.current_speed*math.pi/1000)
 end
 
 simulation.add_gear = function(state, size, position)
