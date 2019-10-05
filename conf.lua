@@ -1,8 +1,10 @@
+local constants = require('constants')
+
 function love.conf(t)
   t.window.title = "Untitled"         -- The window title (string)
   t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
-  t.window.width = 1024                -- The window width (number)
-  t.window.height = 768               -- The window height (number)
+  t.window.width = constants.screen_w                -- The window width (number)
+  t.window.height = constants.screen_h               -- The window height (number)
   t.window.borderless = false         -- Remove all border visuals from the window (boolean)
   t.window.resizable = false          -- Let the window be user-resizable (boolean)
   t.window.minwidth = 1               -- Minimum window width if the window is resizable (number)

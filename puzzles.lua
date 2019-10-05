@@ -1,9 +1,10 @@
 local simulation = require('simulation')
+local constants = require('constants')
 
 local puzzles = {}
 
 local left = 100
-local right = 900
+local right = constants.screen_w - constants.right_bar - 100
 
 
 puzzles[1] = function(state)
