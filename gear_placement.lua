@@ -51,20 +51,22 @@ placement.mouse_pressed = function(state,x,y,button)
   end
   if button == 1 and not internals.selected_gear then
     --select gear
-    internals.selected_gear = target_gear
+    if target_gear == nil then
+      result = {type = 'new',source = nil, position = {x=x,y=y}, size = internals.new_gear_size}
+    elseif (target_gear.type == 'gear' or target_gear.type == 'source') and target_gear.child == nil then
+      internals.selected_gear = target_gear
+    end
   elseif button == 1 and internals.selected_gear then
     local selected = internals.selected_gear
     local point = internals.new_gear_point
     local size = internals.new_gear_size
     --check if the mouse collides with a different gear
-    if target_gear and not(target_gear == selected) then
+    if state.selected_tool == 'belt' and target_gear and not(target_gear == selected or target_gear.type == "source" or target_gear.parent) then
       --connect two gears with a chain
       result = {type='connect',source = selected,target = target_gear}
-      selected = nil
-    elseif #collisions.collide_circle_with_state(state,point.x,point.y,size) == 0 then
+    elseif state.selected_tool == 'gear' and #collisions.collide_circle_with_state(state,point.x,point.y,size) == 0 then
       --place a new gear and select it
       result = {type = 'new',source = selected, position = point, size = size}
-      selected = nil
     end
   elseif button == 2 then
     --cancel action logic
@@ -79,7 +81,7 @@ end
 placement.mouse_moved = function(state,x,y)
   local target_gear = collisions.find_component_at(state,x,y)
 
-  if target_gear and internals.selected_gear and not (target_gear == internals.selected_gear) then
+  if target_gear and internals.selected_gear and not (target_gear == internals.selected_gear) and target_gear.type ~= 'source' and target_gear.parent == nil then
     internals.target_gear = target_gear
   elseif target_gear == nil then
     internals.target_gear = nil
@@ -97,14 +99,14 @@ placement.wheel_moved = function (state,x,y)
 end
 
 
-placement.draw = function()
+placement.draw = function(state)
   if internals.selected_gear then
     --highlight selected_gear
     local selected = internals.selected_gear
     love.graphics.setColor(placement_constants.build_active_color)
     love.graphics.circle("line",selected.position.x,selected.position.y,(selected.size*constants.size_mod)-1,50)
 
-    if internals.target_gear then
+    if state.selected_tool == 'belt' and internals.target_gear then
       --draw link option
       if internals.target_gear.child then
         love.graphics.setColor(placement_constants.build_active_color)
@@ -113,7 +115,7 @@ placement.draw = function()
       end
       love.graphics.line(internals.target_gear.position.x,internals.target_gear.position.y,selected.position.x,selected.position.y)
       love.graphics.circle("line",internals.target_gear.position.x,internals.target_gear.position.y,(internals.target_gear.size*constants.size_mod)-1,50)
-    else
+    elseif state.selected_tool == 'gear' then
       --draw new_gear_radius
       if internals.new_gear_valid then
         love.graphics.setColor(placement_constants.build_active_color)

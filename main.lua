@@ -33,7 +33,7 @@ function love.draw()
   camera:attach()
   --do camera relative drawing here
   renderer.render_areas(state, camera)
-  placement.draw()
+  placement.draw(state)
   renderer.draw(state)
   renderer.render_money_bar(state)
 
@@ -94,11 +94,17 @@ function love.mousepressed(x,y,button)
     if result and result.type then
       if result.type == 'new' then
         local new_gear = simulation.add_gear(state,result.size,result.position)
-        simulation.connect(result.source,new_gear)
+        if result.source then
+          simulation.connect(result.source,new_gear)
+        end
         placement.select_component(new_gear)
       elseif result.type == 'connect' then
         simulation.connect(result.source,result.target)
-        placement.select_component(result.target)
+        placement.select_component(nil)
+        if result.target.type == "gear" and result.target.child == nil then
+          print("T")
+          placement.select_component(result.target)
+        end
       end
     end
   end
