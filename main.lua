@@ -28,14 +28,21 @@ function love.load()
 end
 
 function love.draw()
+  love.graphics.clear({0,0.34,0.73})
+
+  renderer.render_money_background()
+
   camera:attach()
   --do camera relative drawing here
+  renderer.render_areas(state, camera)
   placement.draw()
   renderer.draw(state)
+  renderer.render_money_bar(state)
 
   camera:detach()
   --do window relative drawing here
   love.graphics.print(camera.x..","..camera.y,10,10)
+  renderer.render_money_amount(state)
 end
 
 function love.resize()
@@ -75,6 +82,15 @@ function love.quit()
 
 end
 
-function love.update(dt)
-  simulation.update(state)
+local accumulatedDeltaTime = 0
+function love.update(deltaTime)
+
+  accumulatedDeltaTime = accumulatedDeltaTime + deltaTime
+
+  local tickTime = 1/60
+
+  while accumulatedDeltaTime > tickTime do
+    simulation.update(state)
+    accumulatedDeltaTime = accumulatedDeltaTime - tickTime
+  end
 end

@@ -4,6 +4,9 @@ local constants =
   screen_h = 768,
 
   right_bar = 200,
+
+  money_size_scaler = 500,
+  area_size = 150,
 }
 
 return constants
