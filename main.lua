@@ -3,17 +3,22 @@ require('registry')
 local simulation = require('simulation')
 local renderer = require('simulation_renderer')
 local puzzles = require('puzzles')
+local camera_lib = require('libs.camera')
 
 local state
+local camera
 
 function love.load()
+  local screen_width, screen_height = love.graphics.getDimensions()
   state = simulation.create_state()
+  camera = camera_lib(512,384)
+  camera.smoother = camera_lib.smooth.linear(100)
+  camera:lockX(512)
 
   for _, puzzle in pairs(puzzles) do
-    puzzle(state)
+  puzzle(state)
   end
 
-  local screen_width, screen_height = love.graphics.getDimensions()
 
   for _=1, 100 do
     table.insert(circles,{shape='circle',x=math.random()*screen_width,y=math.random()*screen_height,radius=math.random(1,10)})
@@ -23,8 +28,14 @@ function love.load()
 end
 
 function love.draw()
+  camera:attach()
+  --do camera relative drawing here
   placement.draw()
   renderer.draw(state)
+
+  camera:detach()
+  --do window relative drawing here
+  love.graphics.print(camera.x..","..camera.y,10,10)
 end
 
 function love.resize()
@@ -35,8 +46,14 @@ function love.resize()
   end
 end
 
-function love.keypressed()
-
+function love.keypressed(key)
+  if key == "down" and camera.y < 384 then
+    camera:lookAt(camera.x,camera.y + 100)
+  elseif key == "up" then
+    camera:lookAt(camera.x,camera.y - 100)
+  elseif key == "x" then
+    camera:lookAt(camera.x,384)
+  end
 end
 
 function love.mousemoved(x,y)
