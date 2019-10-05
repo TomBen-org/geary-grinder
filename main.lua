@@ -23,12 +23,7 @@ function love.load()
 end
 
 function love.draw()
-  --for _, circle in pairs(circles) do
-  --  love.graphics.setColor(circle_constants.color)
-  --  love.graphics.circle("fill",circle.x,circle.y,circle.radius,10)
-  --end
-
-  --placement.draw(circles)
+  placement.draw()
   renderer.draw(state)
 end
 
@@ -53,7 +48,7 @@ function love.wheelmoved(x,y)
 end
 
 function love.mousepressed(x,y,button)
-  local x, y, size, is_placed = placement.mouse_pressed(x,y,button,clicked_gear)
+  local x, y, size, is_placed = placement.mouse_pressed(x,y,button,state)
   if is_placed == true then
     local new_gear = simulation.add_gear(state,size,{x=x,y=y})
   end
