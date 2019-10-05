@@ -52,7 +52,9 @@ placement.mouse_pressed = function(state,x,y,button)
   if button == 1 and not internals.selected_gear then
     --select gear
     if target_gear == nil then
-      result = {type = 'new',source = nil, position = {x=x,y=y}, size = internals.new_gear_size}
+      if state.selected_tool == 'gear' then
+        result = {type = 'new',source = nil, position = {x=x,y=y}, size = internals.new_gear_size}
+      end
     elseif (target_gear.type == 'gear' or target_gear.type == 'source') and target_gear.child == nil then
       internals.selected_gear = target_gear
     end
@@ -69,6 +71,18 @@ placement.mouse_pressed = function(state,x,y,button)
       result = {type = 'new',source = selected, position = point, size = size}
     end
   elseif button == 2 then
+    if state.selected_tool == 'gear' and not internals.selected_gear and target_gear and target_gear.type == "gear" then
+      result = {type = 'remove', target=target_gear}
+    end
+
+    if state.selected_tool == 'belt' and not internals.selected_gear and target_gear then
+      if target_gear.connection_type == 'belt' then
+        result = {type = 'disconnect_belt', target = target_gear}
+      elseif target_gear.child and target_gear.child.connection_type == 'belt' then
+        result = {type = 'disconnect_belt', target = target_gear.child}
+      end
+    end
+
     --cancel action logic
     internals.selected_gear = nil
   end

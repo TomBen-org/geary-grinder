@@ -197,6 +197,34 @@ simulation.connect = function(parent, child, type)
   child.connection_type = type
 end
 
+simulation.remove = function(state, to_remove)
+  if to_remove.child then
+    to_remove.child.parent = nil
+    to_remove.child.connection_type = 'none'
+  end
+
+  if to_remove.parent then
+    to_remove.parent.child = nil
+  end
+
+  for index, item in pairs(state.all_components) do
+    if item == to_remove then
+      table.remove(state.all_components, index)
+      break
+    end
+  end
+end
+
+simulation.disconnect_belt = function(to_disconnect)
+  if to_disconnect.connection_type ~= 'belt' then
+    assert(to_disconnect.child.connection_type == 'belt')
+    to_disconnect = to_disconnect.child
+  end
+
+  to_disconnect.connection_type = 'none'
+  to_disconnect.parent.child = nil
+  to_disconnect.parent = nil
+end
 
 simulation.update_recursive = function(component, parent_size, parent_speed)
   if component.type == "source" then

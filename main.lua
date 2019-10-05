@@ -104,6 +104,11 @@ function love.mousepressed(x,y,button)
         if result.target.type == "gear" and result.target.child == nil then
           placement.select_component(result.target)
         end
+      elseif result.type == 'remove' then
+        simulation.remove(state, result.target)
+      elseif result.type == 'disconnect_belt' then
+        placement.select_component(result.target.parent)
+        simulation.disconnect_belt(result.target)
       end
     end
   end
