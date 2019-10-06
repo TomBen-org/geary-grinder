@@ -76,43 +76,36 @@ local draw_fake_belt = function(source,target,color)
   love.graphics.setColor(255,255,255)
 end
 
+placement.valid_circle_placement = function(state,x,y,s)
+  local no_collide = #collisions.collide_circle_with_state(state,x,y,s) == 0
+  local bounds = simulation.get_bounding_box(state)
+  local inside_boundary = collisions.circle_inside_boundary(
+    x,y,s,
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height
+  )
+  return no_collide and inside_boundary
+end
+
 local update_new_gear_position = function(state,mx,my)
   if not (mx and my) then
     mx, my = love.mouse.getPosition()
   end
-  if internals.selected_gear and state.selected_tool == 'gear' then
+  if internals.selected_gear then
     local cx,cy = internals.selected_gear.position.x,internals.selected_gear.position.y
     local angle_to = math2d.angleTo(mx-cx,my-cy)
     local gx, gy = math2d.fromPolar(angle_to,(internals.selected_gear.size + internals.new_gear_size) * constants.size_mod)
     internals.new_gear_point = {x=cx+gx,y=cy+gy}
-    local no_collide = #collisions.collide_circle_with_state(state,internals.new_gear_point.x,internals.new_gear_point.y,internals.new_gear_size,internals.selected_gear) == 0
-    local bounds = simulation.get_bounding_box(state)
-    local inside_boundary = collisions.circle_inside_boundary(
-      internals.new_gear_point.x,
-      internals.new_gear_point.y,
-      internals.new_gear_size,
-      bounds.x,
-      bounds.y,
-      bounds.width,
-      bounds.height
-    )
-    internals.new_gear_valid = no_collide and inside_boundary
-  elseif state.selected_tool == 'gear' then
+  else
     internals.new_gear_point = {x=mx,y=my}
-    local no_collide = #collisions.collide_circle_with_state(state,internals.new_gear_point.x,internals.new_gear_point.y,internals.new_gear_size) == 0
-    local bounds = simulation.get_bounding_box(state)
-    local inside_boundary = collisions.circle_inside_boundary(
-      internals.new_gear_point.x,
-      internals.new_gear_point.y,
-      internals.new_gear_size,
-      bounds.x,
-      bounds.y,
-      bounds.width,
-      bounds.height
-    )
-    internals.new_gear_valid = no_collide and inside_boundary
-
   end
+  internals.new_gear_valid = placement.valid_circle_placement(state,
+    internals.new_gear_point.x,
+    internals.new_gear_point.y,
+    internals.new_gear_size
+  )
 end
 
 placement.load = function()
@@ -143,16 +136,9 @@ placement.mouse_pressed = function(state,x,y,button)
     --select gear
     if target_gear == nil then
       if state.selected_tool == 'gear' then
-        local collide_free = collisions.collide_circle_with_state(state,x,y,internals.new_gear_size)
-        local bounds = simulation.get_bounding_box(state)
-        local inside_boundary = collisions.circle_inside_boundary(x,y,
-          internals.new_gear_size,
-          bounds.x,
-          bounds.y,
-          bounds.width,
-          bounds.height
-        )
-        if collide_free and inside_boundary then
+        local valid_placement = placement.valid_circle_placement(state,x,y,internals.new_gear_size)
+
+        if valid_placement then
           result = {type = 'new',source = nil, position = {x=x,y=y}, size = internals.new_gear_size}
         end
       end
@@ -218,7 +204,6 @@ placement.wheel_moved = function (state,x,y)
 end
 
 placement.draw_belt_tool_overlay = function(state,mx,my)
-  print(mx,my)
   local texts = {}
 
   if internals.selected_gear and internals.hovered_gear then
@@ -258,14 +243,51 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
   end
 end
 
+placement.draw_gear_tool_overlay = function(state,mx,my)
+  local texts = {}
+
+  love.graphics.setLineWidth(1)
+  if internals.selected_gear then
+    if internals.new_gear_valid then
+      love.graphics.setColor(placement_constants.build_active_color)
+      table.insert(texts,"Left click to attach new gear")
+    else
+      love.graphics.setColor(placement_constants.build_collision_color)
+      table.insert(texts,"Can't attach here")
+    end
+    local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
+    love.graphics.circle("line",gx,gy,internals.new_gear_size*constants.size_mod,50)
+  elseif internals.hovered_gear then
+    --display a hover selection
+    love.graphics.setColor(placement_constants.build_inactive_color)
+    love.graphics.circle("line",
+      internals.hovered_gear.position.x,
+      internals.hovered_gear.position.y,
+      (constants.size_mod * internals.hovered_gear.size) + constants.whole_depth,
+      30
+    )
+    table.insert(texts,"Left click to start attaching new gears here")
+  else
+    if internals.new_gear_valid then
+      love.graphics.setColor(placement_constants.build_active_color)
+      table.insert(texts,"Left click to build a gear here")
+    else
+      love.graphics.setColor(placement_constants.build_collision_color)
+      table.insert(texts,"Cannot build here")
+    end
+    local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
+    love.graphics.circle("line",gx,gy,(internals.new_gear_size*constants.size_mod)-(constants.working_depth*2),50)
+  end
+end
+
 placement.draw = function(state,mx,my)
 
   if state.selected_tool == "gear" then
-    --placement.draw_gear_tool_overlay(state)
+    placement.draw_gear_tool_overlay(state,mx,my)
   elseif state.selected_tool == "belt" then
     placement.draw_belt_tool_overlay(state,mx,my)
   elseif state.selected_tool == "splitter" then
-    --placement.draw_gear_tool_overlay(state)
+    --placement.draw_splitter_tool_overlay(state)
   end
   --if internals.selected_gear then
   --  --highlight selected_gear

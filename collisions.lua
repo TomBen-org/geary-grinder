@@ -45,9 +45,7 @@ collisions.collide_circle_with_state = function(state,x,y,size,ignored_gear)
   local collided = {}
   for _, component in pairs(state.all_components) do
     if math2d.dist(x,y,component.position.x,component.position.y) < ((component.size + size) * constants.size_mod) - 1 then
-      if ignored_gear and not component == ignored_gear then
-        table.insert(collided,component)
-      end
+      table.insert(collided,component)
     end
   end
 
