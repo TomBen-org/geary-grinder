@@ -25,6 +25,7 @@ function love.load()
 end
 
 function love.draw()
+  local mx, my = camera:worldCoords(love.mouse.getPosition())
 
   renderer.render_gui_background()
 
@@ -34,6 +35,7 @@ function love.draw()
   --renderer.render_areas(state, camera)
   renderer.draw(camera, state)
 
+  placement.draw(state,mx,my)
   camera:detach()
   --do window relative drawing here
   --renderer.render_money_amount(state)
