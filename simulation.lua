@@ -53,7 +53,7 @@ end
 
 simulation.update_source = function(source)
   assert(source.type == "source")
-  source.rotation = source.rotation + (source.current_speed*math.pi/1000)
+  source.rotation = source.rotation + (source.current_speed*math.pi/constants.speed_mod)
   if source.child then
     simulation.update_recursive(source.child, source.size, source.current_speed)
   end
@@ -130,7 +130,7 @@ simulation.update_sink_part = function(sink_part, parent_size, parent_speed)
     sink_part.current_speed = parent_speed
   end
 
-  sink_part.rotation = sink_part.rotation + (sink_part.current_speed*math.pi/1000)
+  sink_part.rotation = sink_part.rotation + (sink_part.current_speed*math.pi/constants.speed_mod)
 end
 
 simulation.add_gear = function(state, size, position)
@@ -159,7 +159,7 @@ simulation.update_gear = function(gear, parent_size, parent_speed)
     gear.current_speed = parent_speed
   end
 
-  gear.rotation = gear.rotation + (gear.current_speed*math.pi/1000)
+  gear.rotation = gear.rotation + (gear.current_speed*math.pi/constants.speed_mod)
   if gear.child then
     simulation.update_recursive(gear.child, gear.size, gear.current_speed)
   end
@@ -213,7 +213,7 @@ simulation.update_splitter_input = function(splitter_input, parent_size, parent_
     splitter_input.current_speed = parent_speed
   end
 
-  splitter_input.rotation = splitter_input.rotation + (splitter_input.current_speed*math.pi/1000)
+  splitter_input.rotation = splitter_input.rotation + (splitter_input.current_speed*math.pi/constants.speed_mod)
 
   for _, child in pairs(splitter_input.outputs) do
     simulation.update_recursive(child, splitter_input.size, -splitter_input.current_speed / 2)

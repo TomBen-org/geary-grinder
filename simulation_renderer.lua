@@ -31,7 +31,7 @@ local render_constants = {
   line_widths = {
     ["case"] = 2,
     ["selection"] = 1,
-    ["belt"] = 4
+    ["belt"] = 6
   }
 }
 
@@ -40,30 +40,31 @@ local draw_belt = function(component)
   local y = component.position.y - component.child.position.y
   local angle = math2d.angleTo(x,y)
   --local angle = math2d.angleTo(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
-
+  
+  local belt_radius = constants.size_mod
 
 
   local quart = math.pi/2
   local parent = {
     top = {
       angle = angle + quart,
-      x = component.position.x + constants.size_mod * math.cos(angle+quart),
-      y = component.position.y + constants.size_mod * math.sin(angle+quart),
+      x = component.position.x + belt_radius * math.cos(angle+quart),
+      y = component.position.y + belt_radius * math.sin(angle+quart),
     },
     bottom = {
       angle = angle - quart,
-      x = component.position.x + constants.size_mod * math.cos(angle-quart),
-      y = component.position.y + constants.size_mod * math.sin(angle-quart),
+      x = component.position.x + belt_radius * math.cos(angle-quart),
+      y = component.position.y + belt_radius * math.sin(angle-quart),
     },
   }
   local child = {
     top = {
-      x = component.child.position.x + constants.size_mod * math.cos(angle+quart),
-      y = component.child.position.y + constants.size_mod * math.sin(angle+quart),
+      x = component.child.position.x + belt_radius * math.cos(angle+quart),
+      y = component.child.position.y + belt_radius * math.sin(angle+quart),
     },
     bottom = {
-      x = component.child.position.x + constants.size_mod * math.cos(angle + quart*3),
-      y = component.child.position.y + constants.size_mod * math.sin(angle + quart*3),
+      x = component.child.position.x + belt_radius * math.cos(angle + quart*3),
+      y = component.child.position.y + belt_radius * math.sin(angle + quart*3),
     },
   }
   love.graphics.setColor(render_constants.colors["belt"])
@@ -74,7 +75,7 @@ local draw_belt = function(component)
   love.graphics.arc("line","open",
     component.position.x,
     component.position.y,
-    constants.size_mod,
+    belt_radius,
     angle - quart,
     angle + quart,
     10)
@@ -82,7 +83,7 @@ local draw_belt = function(component)
   love.graphics.arc("line","open",
     component.child.position.x,
     component.child.position.y,
-    constants.size_mod,
+    belt_radius,
     angle + quart,
     angle + quart*3,
     10)
@@ -260,11 +261,11 @@ renderer.draw = function(camera, state)
     --love.graphics.circle('line',component.position.x,component.position.y,component.size * constants.size_mod,50)
     draw_gear(component)
 
-    if component.child then
-      love.graphics.setColor(render_constants.colors["link"])
-      love.graphics.line(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
-    end
-    --love.graphics.print(tostring(component.size)..","..component.current_speed,component.position.x,component.position.y)
+    --if component.child then
+    --  love.graphics.setColor(render_constants.colors["link"])
+    --  love.graphics.line(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
+    --end
+    love.graphics.print(tostring(component.size)..","..component.current_speed,component.position.x,component.position.y)
   end
 
   for _, gear in pairs(state.all_components) do
