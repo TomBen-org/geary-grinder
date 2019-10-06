@@ -96,6 +96,19 @@ simulation.get_sink_percentage_satisfied = function(sink)
   return percentage_satisfied
 end
 
+simulation.all_sinks_satisfied = function(state)
+  local all_complete = true
+  for _, sink in pairs(state.sinks) do
+    local percent_complete = simulation.get_sink_percentage_satisfied(sink)
+    if percent_complete == 0 then
+      all_complete = false
+      break
+    end
+  end
+
+  return all_complete
+end
+
 simulation.update_sink = function(state, sink)
   assert(sink.type == "sink")
 

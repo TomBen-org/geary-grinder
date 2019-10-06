@@ -37,13 +37,13 @@ function love.draw()
   level_renderer.draw(10)
   --renderer.render_areas(state, camera)
   renderer.draw(camera, state)
-  renderer.render_money_bar(state)
 
   camera:detach()
   --do window relative drawing here
   love.graphics.print(camera.x..","..camera.y,10,10)
-  renderer.render_money_amount(state)
+  --renderer.render_money_amount(state)
   renderer.render_render_left_gui(state)
+  renderer.render_next_level_button(state)
 
   camera:attach()
   placement.draw(state)
@@ -84,7 +84,7 @@ function love.mousepressed(x,y,button)
     return _x >= rect[1] and _x <= rect[1] + rect[3] and _y >= rect[2] and _y <= rect[2] + rect[4]
   end
 
-  local buy_button = renderer.get_buy_button_rect(state)
+  local buy_button = renderer.get_buy_button_rect()
   local left_gui_buttons = renderer.get_left_button_rects()
 
   for name, rect in pairs(left_gui_buttons) do
@@ -95,11 +95,9 @@ function love.mousepressed(x,y,button)
     end
   end
 
-  if rect_clicked(w_x, w_y, buy_button) then
-    if state.money >= state.next_price then
+  if rect_clicked(x, y, buy_button) then
+    if simulation.all_sinks_satisfied(state) then
       state.areas_available = state.areas_available + 1
-
-      state.money = state.money - state.next_price
 
       local level_index = math.min(state.areas_available, #levels)
       levels[level_index](state)

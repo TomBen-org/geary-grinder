@@ -215,16 +215,16 @@ renderer.render_gui_background = function()
 end
 
 renderer.get_buy_button_rect = function(state)
-  return {constants.screen_w - constants.right_bar + 20, constants.screen_h - constants.area_size * (state.areas_available), constants.right_bar - 40, 100}
+  return {constants.screen_w - constants.right_bar + 20, 20, constants.right_bar - 40, 100}
 end
 
-renderer.render_money_bar = function(state)
-  local money_height = (state.money / state.next_price) * state.areas_available * constants.area_size
-  love.graphics.setColor(render_constants.colors.money_foreground)
-  love.graphics.rectangle('fill', constants.screen_w - constants.right_bar, constants.screen_h - money_height, constants.right_bar, money_height)
+renderer.render_next_level_button = function(state)
+  --local money_height = (state.money / state.next_price) * state.areas_available * constants.area_size
+  --love.graphics.setColor(render_constants.colors.money_foreground)
+  --love.graphics.rectangle('fill', constants.screen_w - constants.right_bar, constants.screen_h - money_height, constants.right_bar, money_height)
 
   love.graphics.setColor(render_constants.colors.buy_area_available)
-  if state.money < state.next_price then
+  if not simulation.all_sinks_satisfied(state) then
     love.graphics.setColor(render_constants.colors.buy_area_unavailable)
   end
   local rect = renderer.get_buy_button_rect(state)
@@ -282,6 +282,14 @@ renderer.draw = function(camera, state)
   local _, top_y = camera:worldCoords(0, 0)
 
   love.graphics.rectangle('fill', constants.left_bar, top_y, constants.screen_w - constants.left_bar - constants.right_bar - 1, constants.screen_h - (state.areas_available * constants.area_size) - top_y)
+
+
+  for i=1,state.areas_available do
+    love.graphics.setColor{0,0,0}
+    local text = love.graphics.newText(love.graphics.getFont(), "Level " .. i)
+    local textWidth, textHeight = text:getDimensions()
+    love.graphics.draw(text, constants.screen_w / 2 - textWidth/2, constants.screen_h - constants.area_size*i)
+  end
 
   for _, sink in pairs(state.sinks) do
     draw_machine(sink)
