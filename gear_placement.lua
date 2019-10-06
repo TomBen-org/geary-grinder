@@ -80,8 +80,8 @@ placement.valid_splitter_placement = function(state,x,y)
   return true
 end
 
-placement.valid_circle_placement = function(state,x,y,s)
-  local no_collide = #collisions.collide_circle_with_state(state,x,y,s) == 0
+placement.valid_circle_placement = function(state,x,y,s,ignore_gear)
+  local no_collide = not collisions.collide_circle_with_state(state,x,y,s, internals.selected_gear)
   local bounds = simulation.get_bounding_box(state)
   local inside_boundary = collisions.circle_inside_boundary(
     x,y,s,
@@ -140,7 +140,7 @@ placement.mouse_pressed = function(state,x,y,button)
     --select gear
     if target_gear == nil then
       if state.selected_tool == 'gear' then
-        local valid_placement = placement.valid_circle_placement(state,x,y,internals.new_gear_size)
+        local valid_placement = placement.valid_circle_placement(state,x,y,internals.new_gear_size, internals.selected_gear)
 
         if valid_placement then
           result = {type = 'new',source = nil, position = {x=x,y=y}, size = internals.new_gear_size}
@@ -157,7 +157,7 @@ placement.mouse_pressed = function(state,x,y,button)
     if state.selected_tool == 'belt' and target_gear and not(target_gear == selected or target_gear.type == "source" or target_gear.parent) then
       --connect two gears with a chain
       result = {type='connect',source = selected,target = target_gear}
-    elseif state.selected_tool == 'gear' and #collisions.collide_circle_with_state(state,point.x,point.y,size) == 0 then
+    elseif state.selected_tool == 'gear' and not collisions.collide_circle_with_state(state,point.x,point.y,size) then
       --place a new gear and select it
       result = {type = 'new',source = selected, position = point, size = size}
     end
@@ -286,7 +286,7 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
       table.insert(texts,"Cannot build here")
     end
     local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
-    love.graphics.circle("line",gx,gy,(internals.new_gear_size*constants.size_mod)-(constants.working_depth*2),50)
+    love.graphics.circle("line",gx,gy,(internals.new_gear_size*constants.size_mod),50)
   end
 
   return texts

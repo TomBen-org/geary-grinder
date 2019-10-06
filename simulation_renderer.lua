@@ -258,7 +258,7 @@ renderer.render_next_level_button = function(state)
   love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
 
   love.graphics.setColor{0,0,0}
-  local text = love.graphics.newText(love.graphics.getFont(), "Buy\nnext\narea")
+  local text = love.graphics.newText(love.graphics.getFont(), "Next\nlevel")
   local textWidth, textHeight = text:getDimensions()
   love.graphics.draw(text, rect[1] + rect[3]/2 - textWidth/2, rect[2] + rect[4]/2 - textHeight/2)
 end

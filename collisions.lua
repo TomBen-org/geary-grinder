@@ -1,5 +1,6 @@
 local math2d = require("libs.vector-light")
 local constants = require('constants')
+local HC = require("libs.HC")
 
 local collisions = {}
 
@@ -41,45 +42,40 @@ collisions.circle_inside_boundary = function(x,y,size,bx,by,bw,bh)
   return x-r > bx and x+r < bx+bw and y-r > by and y+r < by+bh
 end
 
-collisions.collide_circle_with_state = function(state,x,y,size,ignored_gear)
-  local collided = {}
+local make_HC_state = function(state, ignored)
+	local collider = HC.new(150)
+
   for _, component in pairs(state.all_components) do
-    if math2d.dist(x,y,component.position.x,component.position.y) < ((component.size + size) * constants.size_mod) - 1 then
-      table.insert(collided,component)
-    end
+		if component ~= ignored then
+			collider:circle(component.position.x, component.position.y, component.size * constants.size_mod)
+		end
   end
 
   for _, obstacle in pairs(state.obstacles) do
-    if circle_and_rectangle_overlap(x,y,size*constants.size_mod,
-      obstacle.position.x,
-      obstacle.position.y,
-      obstacle.casing.width,
-      obstacle.casing.height) then
-      table.insert(collided,obstacle)
-    end
+		collider:rectangle(obstacle.position.x, obstacle.position.y, obstacle.casing.width, obstacle.casing.height)
   end
 
   for _, sink in pairs(state.sinks) do
-    if circle_and_rectangle_overlap(x,y,size*constants.size_mod,
-      sink.position.x - sink.casing.width/2,
-      sink.position.y - sink.casing.height/2,
-      sink.casing.width,
-      sink.casing.height) then
-      table.insert(collided,sink)
-    end
+		collider:rectangle(sink.position.x - sink.casing.width/2, sink.position.y - sink.casing.height/2, sink.casing.width, sink.casing.height)
   end
 
   for _, splitter in pairs(state.splitters) do
-    if circle_and_rectangle_overlap(x,y,size*constants.size_mod,
-      splitter.position.x - splitter.casing.width/2,
-      splitter.position.y - splitter.casing.height/2,
-      splitter.casing.width,
-      splitter.casing.height) then
-      table.insert(collided,splitter)
-    end
+		collider:rectangle(splitter.position.x - splitter.casing.width/2, splitter.position.y - splitter.casing.height/2, splitter.casing.width, splitter.casing.height)
   end
 
-  return collided
+	return collider
+end
+
+
+collisions.collide_circle_with_state = function(state,x,y,size, ignored)
+	local collider = make_HC_state(state, ignored)
+
+  local circle = collider:circle(x, y, size*constants.size_mod)
+	if next(collider:collisions(circle)) then
+		return true
+	end
+
+	return false
 end
 
 
