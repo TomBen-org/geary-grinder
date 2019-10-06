@@ -162,7 +162,7 @@ placement.mouse_pressed = function(state,x,y,button)
     if state.selected_tool == 'belt' and target_gear and not(target_gear == selected or target_gear.type == "source" or target_gear.parent) then
       --connect two gears with a chain
       result = {type='connect',source = selected,target = target_gear}
-    elseif state.selected_tool == 'gear' and not placement.valid_circle_placement(state, x, y, internals.new_gear_size) then
+    elseif state.selected_tool == 'gear' and placement.valid_circle_placement(state, x, y, internals.new_gear_size) then
       --place a new gear and select it
       result = {type = 'new',source = selected, position = point, size = size}
     end
