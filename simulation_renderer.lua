@@ -93,6 +93,20 @@ local draw_belt = function(component)
   love.graphics.setColor(255,255,255)
 end
 
+local draw_obstacle = function(obstacle)
+  local left_top = {
+    x = obstacle.position.x,
+    y = obstacle.position.y,
+  }
+  love.graphics.setColor(render_constants.colors["blueprint-bg"])
+  love.graphics.rectangle("fill",left_top.x,left_top.y,obstacle.casing.width,obstacle.casing.height)
+  love.graphics.setLineWidth(render_constants.line_widths['case'])
+  love.graphics.setColor(render_constants.colors["gear"])
+  love.graphics.rectangle("line",left_top.x,left_top.y,obstacle.casing.width,obstacle.casing.height)
+
+  love.graphics.setLineWidth(render_constants.line_widths['selection'])
+end
+
 local draw_machine = function(machine)
   local left_top = {
     x = machine.position.x - machine.casing.width/2,
@@ -300,7 +314,7 @@ renderer.draw = function(camera, state)
   end
 
   for _, obstacle in pairs(state.obstacles) do
-    draw_machine(obstacle)
+    draw_obstacle(obstacle)
   end
 
   for _, component in pairs(state.all_components) do
