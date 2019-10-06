@@ -19,10 +19,6 @@ function love.load()
 
   levels[1](state)
 
-  for _=1, 100 do
-    table.insert(circles,{shape='circle',x=math.random()*screen_width,y=math.random()*screen_height,radius=math.random(1,10)})
-  end
-
   level_renderer.load()
 
   placement.load()
@@ -50,11 +46,6 @@ function love.draw()
 end
 
 function love.resize()
-  local screen_width, screen_height = love.graphics.getDimensions()
-  circles = {}
-  for _=1, 100 do
-    table.insert(circles,{x=math.random()*screen_width,y=math.random()*screen_height})
-  end
 end
 
 function love.keypressed(key)
