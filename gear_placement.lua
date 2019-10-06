@@ -13,7 +13,7 @@ local placement_constants = {
 local internals = {
   selected_gear = nil,
   new_gear_point = {x=0,y=0},
-  new_gear_size = 1,
+  new_gear_size = constants.min_gear_size,
   new_gear_valid = false,
   build_active = false
 }
@@ -112,7 +112,7 @@ end
 placement.wheel_moved = function (state,x,y)
   if y > 0 and internals.new_gear_size < constants.max_gear_size then
     internals.new_gear_size = internals.new_gear_size + 1
-  elseif y < 0 and internals.new_gear_size > 1 then
+  elseif y < 0 and internals.new_gear_size > constants.min_gear_size then
     internals.new_gear_size = internals.new_gear_size - 1
   end
   update_new_gear_position(state)

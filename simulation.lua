@@ -10,6 +10,7 @@ simulation.create_state = function()
     splitters = {},
     all_components = {},
     money = 0,
+    last_income = 0,
     areas_available = 1,
     selected_tool = "gear",
   }
@@ -60,20 +61,25 @@ end
 simulation.update_sink = function(state, sink)
   assert(sink.type == "sink")
 
-  sink.satisfied = true
+  local percentage_satisfied = 1
+
   for _, sink_part in pairs(sink.components) do
-    if not sink_part.satisfied then
-      sink.satisfied = false
-      break
+    local abs_speed = math.abs(sink_part.current_speed)
+
+    local this_percentage = 0
+    if abs_speed >= sink_part.speed_min then
+      this_percentage = math.min(abs_speed, sink_part.speed_max) / sink_part.speed_max
     end
+
+    percentage_satisfied = math.min(this_percentage, percentage_satisfied)
   end
 
-  if sink.satisfied then
-    state.money = state.money + sink.money_per_tick
+  if percentage_satisfied > 0 then
+    state.money = state.money + percentage_satisfied * sink.money_per_tick
   end
 end
 
-simulation.add_sink_part = function(state, sink, name, size, speed_min, position)
+simulation.add_sink_part = function(state, sink, name, size, speed_min, speed_max, position)
   assert(sink.type == "sink")
 
   local new_sink_component =
@@ -82,11 +88,11 @@ simulation.add_sink_part = function(state, sink, name, size, speed_min, position
     name = name,
     size = size,
     speed_min = speed_min,
+    speed_max = speed_max,
     position = position,
     rotation = 0,
     parent = nil,
     connection_type = 'none',
-    satisfied = false,
     current_speed = 0,
   }
 
@@ -262,6 +268,8 @@ simulation.update_recursive = function(component, parent_size, parent_speed)
 end
 
 simulation.update = function(state)
+  local money_before = state.money
+
   for _, component in pairs(state.all_components) do
     if component.current_speed and component.type ~= 'source' then
       component.current_speed = 0
@@ -275,6 +283,8 @@ simulation.update = function(state)
   for _, sink in pairs(state.sinks) do
     simulation.update_sink(state, sink)
   end
+
+  state.last_income = state.money - money_before
 end
 
 return simulation

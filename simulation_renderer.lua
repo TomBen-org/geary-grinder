@@ -132,7 +132,8 @@ end
 
 renderer.render_money_amount = function(state)
   love.graphics.setColor({0, 0, 0})
-  love.graphics.print(tostring(state.money), constants.screen_w - constants.right_bar, 50)
+  love.graphics.print("Money: " .. math.floor(state.money), constants.left_bar + 10, 50)
+  love.graphics.print("Income: " ..  string.format("%.2f",state.last_income * 60) .. " / s", constants.left_bar + 10, 70)
 end
 
 renderer.draw = function(state)
