@@ -94,7 +94,6 @@ placement.valid_circle_placement = function(state,x,y,s,ignore_gear)
     bounds.width,
     bounds.height
   )
-  print(no_collide, inside_boundary)
   return no_collide and inside_boundary
 end
 
@@ -188,8 +187,12 @@ placement.mouse_pressed = function(state,x,y,button)
   return result
 end
 
-local valid_belt_placement = function(selected,target)
-  return not (selected == target) and selected.child == nil and target.parent == nil
+local valid_belt_placement = function(state, selected, target)
+  return not (selected == target) and selected.child == nil and target.parent == nil and not collisions.collide_belt_with_state(state, selected.position, target.position)
+end
+
+local valid_belt_preview_placement = function(state, selected, target_position)
+  return not collisions.collide_belt_with_state(state, selected.position, target_position)
 end
 
 placement.mouse_moved = function(state,x,y)
@@ -217,7 +220,7 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
 
   if internals.selected_gear and internals.hovered_gear then
     local color = placement_constants.build_collision_color
-    if valid_belt_placement(internals.selected_gear,internals.hovered_gear) then
+    if valid_belt_placement(state, internals.selected_gear,internals.hovered_gear) then
       color = placement_constants.build_active_color
       table.insert(texts,"Left Click to connect belt")
     end
@@ -225,7 +228,14 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
     table.insert(texts, "Right Click to cancel belt placement")
 
   elseif internals.selected_gear and not internals.hovered_gear then
-    draw_fake_belt(internals.selected_gear,{position={x=mx,y=my}},placement_constants.build_inactive_color)
+
+    local color = placement_constants.build_collision_color
+    if valid_belt_preview_placement(state, internals.selected_gear, {x=mx,y=my}) then
+      color = placement_constants.build_inactive_color
+    end
+
+
+    draw_fake_belt(internals.selected_gear,{position={x=mx,y=my}}, color)
     table.insert(texts,"Left click a target to join")
 
   elseif internals.hovered_gear and not internals.hovered_gear.type == "sink_part" then
