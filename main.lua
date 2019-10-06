@@ -36,7 +36,7 @@ function love.draw()
   camera:attach()
   --do camera relative drawing here
   level_renderer.draw(5)
-  renderer.render_areas(state, camera)
+  --renderer.render_areas(state, camera)
   placement.draw(state)
   renderer.draw(state)
   renderer.render_money_bar(state)
