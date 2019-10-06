@@ -12,7 +12,7 @@ levels[1] = function(state)
 
   local source = simulation.add_source(state, "basic_source", 3, 5, {x = left, y = y})
   local sink = simulation.add_sink(state, "basic_sink", {x = 50, y = 50}, 1)
-  simulation.add_sink_part(state, sink, "basic_sink_part_1", 1, 9,10, {x = right, y = y})
+  simulation.add_sink_part(state, sink, "basic_sink_part_1", 1, 9, {x = right, y = y})
 
   local gear = simulation.add_gear(state, 2, { x=left*2, y=y})
   --simulation.connect(source, gear)

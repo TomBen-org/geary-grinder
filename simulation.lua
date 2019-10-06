@@ -73,7 +73,7 @@ simulation.update_sink = function(state, sink)
   end
 end
 
-simulation.add_sink_part = function(state, sink, name, size, speed_min, speed_max, position)
+simulation.add_sink_part = function(state, sink, name, size, speed_min, position)
   assert(sink.type == "sink")
 
   local new_sink_component =
@@ -82,7 +82,6 @@ simulation.add_sink_part = function(state, sink, name, size, speed_min, speed_ma
     name = name,
     size = size,
     speed_min = speed_min,
-    speed_max = speed_max,
     position = position,
     rotation = 0,
     parent = nil,
@@ -104,7 +103,7 @@ simulation.update_sink_part = function(sink_part, parent_size, parent_speed)
     sink_part.current_speed = -sink_part.current_speed
   end
 
-  sink_part.satisfied = sink_part.current_speed >= sink_part.speed_min and sink_part.current_speed <= sink_part.speed_max
+  sink_part.satisfied = sink_part.current_speed >= sink_part.speed_min
   sink_part.rotation = sink_part.rotation + (sink_part.current_speed*math.pi/1000)
 end
 

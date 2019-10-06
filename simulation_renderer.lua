@@ -143,7 +143,7 @@ renderer.draw = function(state)
       love.graphics.setColor(render_constants.colors["link"])
       love.graphics.line(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
     end
-    love.graphics.print(tostring(component.current_speed),component.position.x,component.position.y)
+    love.graphics.print(tostring(component.size)..","..component.current_speed,component.position.x,component.position.y)
   end
 end
 
