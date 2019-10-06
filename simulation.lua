@@ -12,6 +12,7 @@ simulation.create_state = function()
     money = 0,
     last_income = 0,
     areas_available = 1,
+    next_price = 0,
     selected_tool = "gear",
   }
 end
@@ -71,7 +72,7 @@ simulation.update_sink = function(state, sink)
     local abs_speed = math.abs(sink_part.current_speed)
 
     local this_percentage = 0
-    if abs_speed >= sink_part.speed_min then
+    if abs_speed >= sink_part.speed_min and abs_speed <= sink_part.speed_max then
       this_percentage = math.min(abs_speed, sink_part.speed_max) / sink_part.speed_max
     end
 
@@ -152,7 +153,7 @@ simulation.add_splitter = function(state, position, case_height, case_width)
   local splitter_input =
   {
     type = "splitter_input",
-    size = 1,
+    size = 2,
     position = {x = position.x, y = position.y - 40},
     parent = nil,
     connection_type = 'none',
@@ -167,8 +168,8 @@ simulation.add_splitter = function(state, position, case_height, case_width)
   }
   table.insert(state.all_components, splitter_input)
 
-  local output_1 = simulation.add_gear(state, 1, {x = position.x - 40, y = position.y + 30})
-  local output_2 = simulation.add_gear(state, 1, {x = position.x + 40, y = position.y + 30})
+  local output_1 = simulation.add_gear(state, 2, {x = position.x - 45, y = position.y + 40})
+  local output_2 = simulation.add_gear(state, 2, {x = position.x + 45, y = position.y + 40})
   table.insert(splitter_input.outputs, output_1)
   table.insert(splitter_input.outputs, output_2)
   output_1.parent = splitter_input

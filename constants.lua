@@ -8,8 +8,8 @@ local constants =
 
   money_size_scaler = 500,
   area_size = 700,
-  size_mod = 15,
-  min_gear_size = 3,
+  size_mod = 20,
+  min_gear_size = 2,
   max_gear_size = 8,
   teeth_per_size = 6,
   working_depth = 6,

@@ -100,11 +100,14 @@ renderer.get_buy_button_rect = function(state)
 end
 
 renderer.render_money_bar = function(state)
-  local money_height = state.money / constants.money_size_scaler
+  local money_height = (state.money / state.next_price) * state.areas_available * constants.area_size
   love.graphics.setColor(render_constants.colors.money_foreground)
   love.graphics.rectangle('fill', constants.screen_w - constants.right_bar, constants.screen_h - money_height, constants.right_bar, money_height)
 
   love.graphics.setColor(render_constants.colors.buy_area_available)
+  if state.money < state.next_price then
+    love.graphics.setColor(render_constants.colors.buy_area_unavailable)
+  end
   local rect = renderer.get_buy_button_rect(state)
   love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
 

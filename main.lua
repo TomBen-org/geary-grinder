@@ -92,10 +92,14 @@ function love.mousepressed(x,y,button)
   end
 
   if rect_clicked(w_x, w_y, buy_button) then
-    state.areas_available = state.areas_available + 1
+    if state.money >= state.next_price then
+      state.areas_available = state.areas_available + 1
 
-    local level_index = math.min(state.areas_available - 1, #levels)
-    levels[level_index](state)
+      state.money = state.money - state.next_price
+
+      local level_index = math.min(state.areas_available, #levels)
+      levels[level_index](state)
+    end
   else
     local result = placement.mouse_pressed(state,w_x,w_y,button)
     if result and result.type then
