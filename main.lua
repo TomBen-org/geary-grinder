@@ -4,6 +4,7 @@ local simulation = require('simulation')
 local renderer = require('simulation_renderer')
 local levels = require('levels')
 local camera_lib = require('libs.camera')
+local level_renderer = require('level_renderer')
 local constants = require('constants')
 
 local state
@@ -22,6 +23,8 @@ function love.load()
     table.insert(circles,{shape='circle',x=math.random()*screen_width,y=math.random()*screen_height,radius=math.random(1,10)})
   end
 
+  level_renderer.load()
+
   placement.load()
 end
 
@@ -32,6 +35,7 @@ function love.draw()
 
   camera:attach()
   --do camera relative drawing here
+  level_renderer.draw(5)
   renderer.render_areas(state, camera)
   placement.draw(state)
   renderer.draw(state)

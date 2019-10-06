@@ -6,7 +6,6 @@ local levels = {}
 local left = constants.left_bar + 100
 local right = constants.screen_w - constants.right_bar - 100
 
-
 levels[1] = function(state)
   local y = constants.screen_h - state.areas_available * constants.area_size + 100
 
