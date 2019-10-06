@@ -74,28 +74,29 @@ function love.wheelmoved(x,y)
 end
 
 function love.mousepressed(x,y,button)
-  local rect_clicked = function(rect)
-    local m_x, m_y = camera:worldCoords(x, y)
-    return m_x >= rect[1] and m_x <= rect[1] + rect[3] and m_y >= rect[2] and m_y <= rect[2] + rect[4]
+  local w_x, w_y = camera:worldCoords(x, y)
+
+  local rect_clicked = function(_x, _y, rect)
+    return _x >= rect[1] and _x <= rect[1] + rect[3] and _y >= rect[2] and _y <= rect[2] + rect[4]
   end
 
   local buy_button = renderer.get_buy_button_rect(state)
   local left_gui_buttons = renderer.get_left_button_rects()
 
   for name, rect in pairs(left_gui_buttons) do
-    if rect_clicked(rect) then
+    if rect_clicked(x, y, rect) then
       state.selected_tool = name
       return
     end
   end
 
-  if rect_clicked(buy_button) then
+  if rect_clicked(w_x, w_y, buy_button) then
     state.areas_available = state.areas_available + 1
 
     local level_index = math.min(state.areas_available - 1, #levels)
     levels[level_index](state)
   else
-    local result = placement.mouse_pressed(state,x,y,button)
+    local result = placement.mouse_pressed(state,w_x,w_y,button)
     if result and result.type then
       if result.type == 'new' then
         local new_gear = simulation.add_gear(state,result.size,result.position)
