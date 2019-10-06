@@ -76,6 +76,10 @@ local draw_fake_belt = function(source,target,color)
   love.graphics.setColor(255,255,255)
 end
 
+placement.valid_splitter_placement = function(state,x,y)
+  return true
+end
+
 placement.valid_circle_placement = function(state,x,y,s)
   local no_collide = #collisions.collide_circle_with_state(state,x,y,s) == 0
   local bounds = simulation.get_bounding_box(state)
@@ -248,6 +252,7 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
 
   love.graphics.setLineWidth(1)
   if internals.selected_gear then
+    table.insert(texts,"Mouse wheel to change size")
     if internals.new_gear_valid then
       love.graphics.setColor(placement_constants.build_active_color)
       table.insert(texts,"Left click to attach new gear")
@@ -257,7 +262,9 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
     end
     local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
     love.graphics.circle("line",gx,gy,internals.new_gear_size*constants.size_mod,50)
-  elseif internals.hovered_gear then
+  elseif internals.hovered_gear and
+    not (internals.hovered_gear.type == "sink_part" or
+    internals.hovered_gear.type == "splitter_input") then
     --display a hover selection
     love.graphics.setColor(placement_constants.build_inactive_color)
     love.graphics.circle("line",
@@ -268,6 +275,7 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
     )
     table.insert(texts,"Left click to start attaching new gears here")
   else
+    table.insert(texts,"Mouse wheel to change size")
     if internals.new_gear_valid then
       love.graphics.setColor(placement_constants.build_active_color)
       table.insert(texts,"Left click to build a gear here")
