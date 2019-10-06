@@ -37,7 +37,7 @@ function love.draw()
   level_renderer.draw(10)
   --renderer.render_areas(state, camera)
   placement.draw(state)
-  renderer.draw(state)
+  renderer.draw(camera, state)
   renderer.render_money_bar(state)
 
   camera:detach()

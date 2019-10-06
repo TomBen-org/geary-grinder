@@ -23,6 +23,7 @@ local render_constants = {
     ["buy_area_available"] = {0, 1, 0},
     ["left_bar_button"] = {0.5, 0.5, 0.5},
     ["selected_left_bar_button"] = {0.75, 0.75, 0.75},
+    ["locked_area_tint"] = {1, 0, 0, 0.3}
   }
 }
 
@@ -153,7 +154,13 @@ renderer.render_money_amount = function(state)
   love.graphics.print("Income: " ..  string.format("%.2f",state.last_income * 60) .. " / s", constants.left_bar + 10, 70)
 end
 
-renderer.draw = function(state)
+renderer.draw = function(camera, state)
+  love.graphics.setColor(render_constants.colors.locked_area_tint)
+
+  local _, top_y = camera:worldCoords(0, 0)
+
+  love.graphics.rectangle('fill', constants.left_bar, top_y, constants.screen_w - constants.left_bar - constants.right_bar - 1, constants.screen_h - (state.areas_available * constants.area_size) - top_y)
+
   for _, component in pairs(state.all_components) do
     --love.graphics.setColor(render_constants.colors[component.type] or render_constants.colors['other'])
     --love.graphics.circle('line',component.position.x,component.position.y,component.size * constants.size_mod,50)
