@@ -264,6 +264,12 @@ simulation.update_recursive = function(component, parent_size, parent_speed)
 end
 
 simulation.update = function(state)
+  for _, component in pairs(state.all_components) do
+    if component.current_speed and component.type ~= 'source' then
+      component.current_speed = 0
+    end
+  end
+
   for _, source in pairs(state.sources) do
     simulation.update_recursive(source, nil, nil)
   end

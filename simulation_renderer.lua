@@ -138,12 +138,12 @@ renderer.draw = function(state)
   for _, component in pairs(state.all_components) do
     --love.graphics.setColor(render_constants.colors[component.type] or render_constants.colors['other'])
     --love.graphics.circle('line',component.position.x,component.position.y,component.size * constants.size_mod,50)
-    --love.graphics.print(tostring(component.current_speed),component.position.x,component.position.y)
     draw_gear(component)
     if component.child then
       love.graphics.setColor(render_constants.colors["link"])
       love.graphics.line(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
     end
+    love.graphics.print(tostring(component.current_speed),component.position.x,component.position.y)
   end
 end
 
