@@ -1,5 +1,6 @@
 local math2d = require("libs.vector-light")
 local constants = require('constants')
+local simulation = require('simulation')
 
 local renderer = {}
 
@@ -40,7 +41,7 @@ local draw_belt = function(component)
   local y = component.position.y - component.child.position.y
   local angle = math2d.angleTo(x,y)
   --local angle = math2d.angleTo(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
-  
+
   local belt_radius = constants.size_mod
 
 
@@ -106,6 +107,45 @@ local draw_machine = function(machine)
   love.graphics.rectangle("line",left_top.x,left_top.y,machine.casing.width,machine.casing.height)
 
   love.graphics.setLineWidth(render_constants.line_widths['selection'])
+
+end
+
+local draw_sink_indicators = function(machine)
+  local percentage_satisfied = simulation.get_sink_percentage_satisfied(machine)
+  if percentage_satisfied == 0 then
+    love.graphics.setColor{1,0,0}
+  elseif percentage_satisfied < 1 then
+    love.graphics.setColor{1,1,0}
+  elseif percentage_satisfied == 1 then
+    love.graphics.setColor{0,1,0}
+  end
+
+  love.graphics.circle('fill', machine.position.x, machine.position.y - machine.casing.height/2 + 10, 8)
+
+
+  for _, gear in pairs(machine.components) do
+    local absSpeed = math.abs(gear.current_speed)
+    local speedText
+    if absSpeed == math.floor(absSpeed) then
+      speedText = tostring(absSpeed)
+    else
+      speedText = string.format("%.2f", absSpeed)
+    end
+
+    local text = love.graphics.newText(love.graphics.getFont(), speedText .. "/" .. gear.speed_max)
+    local textWidth, textHeight = text:getDimensions()
+
+    if absSpeed < gear.speed_min then
+      love.graphics.setColor{1,0,0}
+    elseif absSpeed < gear.speed_max then
+      love.graphics.setColor{1,1,0}
+    elseif absSpeed == gear.speed_max then
+      love.graphics.setColor{0,1,0}
+    else
+      love.graphics.setColor{1,0,0}
+    end
+    love.graphics.draw(text, gear.position.x - textWidth/2, gear.position.y - gear.size*constants.size_mod - 20)
+  end
 end
 
 local draw_gear = function(gear)
@@ -149,30 +189,6 @@ local draw_gear = function(gear)
 	love.graphics.points(pos.x, pos.y)
 
   love.graphics.pop()
-
-  if gear.type == "sink_part" then
-    local absSpeed = math.abs(gear.current_speed)
-    local speedText
-    if absSpeed == math.floor(absSpeed) then
-      speedText = tostring(absSpeed)
-    else
-      speedText = string.format("%.2f", absSpeed)
-    end
-
-    local text = love.graphics.newText(love.graphics.getFont(), speedText .. "/" .. gear.speed_max)
-    local textWidth, textHeight = text:getDimensions()
-
-    if absSpeed < gear.speed_min then
-      love.graphics.setColor{1,0,0}
-    elseif absSpeed < gear.speed_max then
-      love.graphics.setColor{1,1,0}
-    elseif absSpeed == gear.speed_max then
-      love.graphics.setColor{0,1,0}
-    else
-      love.graphics.setColor{1,0,0}
-    end
-    love.graphics.draw(text, gear.position.x - textWidth/2, gear.position.y - gear.size*constants.size_mod - 20)
-  end
 end
 
 renderer.render_areas = function(state, camera)
@@ -266,7 +282,7 @@ renderer.draw = function(camera, state)
   local _, top_y = camera:worldCoords(0, 0)
 
   love.graphics.rectangle('fill', constants.left_bar, top_y, constants.screen_w - constants.left_bar - constants.right_bar - 1, constants.screen_h - (state.areas_available * constants.area_size) - top_y)
-  
+
   for _, sink in pairs(state.sinks) do
     draw_machine(sink)
   end
@@ -298,6 +314,9 @@ renderer.draw = function(camera, state)
     end
   end
 
+  for _, sink in pairs(state.sinks) do
+    draw_sink_indicators(sink)
+  end
 end
 
 

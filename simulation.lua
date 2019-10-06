@@ -79,9 +79,7 @@ simulation.add_sink = function(state, name, position, money_per_tick, case_heigh
   return new_sink
 end
 
-simulation.update_sink = function(state, sink)
-  assert(sink.type == "sink")
-
+simulation.get_sink_percentage_satisfied = function(sink)
   local percentage_satisfied = 1
 
   for _, sink_part in pairs(sink.components) do
@@ -94,6 +92,14 @@ simulation.update_sink = function(state, sink)
 
     percentage_satisfied = math.min(this_percentage, percentage_satisfied)
   end
+
+  return percentage_satisfied
+end
+
+simulation.update_sink = function(state, sink)
+  assert(sink.type == "sink")
+
+  local percentage_satisfied = simulation.get_sink_percentage_satisfied(sink)
 
   if percentage_satisfied > 0 then
     state.money = state.money + percentage_satisfied * sink.money_per_tick

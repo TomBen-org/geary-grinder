@@ -36,7 +36,6 @@ function love.draw()
   --do camera relative drawing here
   level_renderer.draw(10)
   --renderer.render_areas(state, camera)
-  placement.draw(state)
   renderer.draw(camera, state)
   renderer.render_money_bar(state)
 
@@ -45,6 +44,10 @@ function love.draw()
   love.graphics.print(camera.x..","..camera.y,10,10)
   renderer.render_money_amount(state)
   renderer.render_render_left_gui(state)
+
+  camera:attach()
+  placement.draw(state)
+  camera:detach()
 end
 
 function love.resize()
@@ -87,6 +90,7 @@ function love.mousepressed(x,y,button)
   for name, rect in pairs(left_gui_buttons) do
     if rect_clicked(x, y, rect) then
       state.selected_tool = name
+      placement.select_component(nil)
       return
     end
   end

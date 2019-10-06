@@ -22,9 +22,9 @@ levels[2] = function(state)
   local y = constants.screen_h - state.areas_available * constants.area_size + constants.area_size/2
 
   simulation.add_source(state, "basic_source", 6, 5, {x = left, y = y})
-  local sink = simulation.add_sink(state, "basic_sink", {x = 50, y = 50}, 5/60)
-  simulation.add_sink_part(state, sink, "basic_sink_part_1", 2, 2, 10,{x = right - 45, y = y})
-  simulation.add_sink_part(state, sink, "basic_sink_part_1", 2, 10, 20,{x = right + 45, y = y})
+  local sink = simulation.add_sink(state, "basic_sink", {x = right - 50, y = y}, 5/60)
+  simulation.add_sink_part(state, sink, "basic_sink_part_1", 2, 2, 10,{x = sink.position.x - 45, y = sink.position.y + 45})
+  simulation.add_sink_part(state, sink, "basic_sink_part_1", 2, 10, 20,{x = sink.position.x + 45, y = sink.position.y + 45})
 
   state.next_price = 400
 end
@@ -32,11 +32,11 @@ end
 levels[3] = function(state)
   local y = constants.screen_h - state.areas_available * constants.area_size + constants.area_size/2
 
-  local sink = simulation.add_sink(state, "basic_sink", {x = 50, y = 50}, 5/60)
-  simulation.add_sink_part(state, sink, "basic_sink_part_1", 2, 2, 10,{x = right - 45, y = y})
-  simulation.add_sink_part(state, sink, "basic_sink_part_1", 2, 10, 20,{x = right + 45, y = y})
+  local sink = simulation.add_sink(state, "basic_sink", {x = right - 50, y = y}, 5/60)
+  simulation.add_sink_part(state, sink, "basic_sink_part_1", 2, 2, 10,{x = sink.position.x - 45, y = sink.position.y + 45})
+  simulation.add_sink_part(state, sink, "basic_sink_part_1", 2, 10, 20,{x = sink.position.x + 45, y = sink.position.y + 45})
 
-  state.next_price = 400
+  state.next_price = 600
 end
 
 return levels
