@@ -333,8 +333,11 @@ placement.draw_tooltip = function(mx,my,texts)
   end
 
   love.graphics.setColor({255,255,255})
-  --love.rectangle("fill",left_top.x,left_top.y,max_length+10,(line_height*#texts)+10)
-  --love.graphics.setColor()
+  love.graphics.rectangle("fill",left_top.x,left_top.y,max_length+10,(line_height*#texts)+10)
+  love.graphics.setColor(rgb_255_to_1({29,117,189}))
+  for num, obj in pairs(text_objs) do
+    love.graphics.draw(obj,left_top.x + 5, left_top.y + 5 + (line_height*(num-1)))
+  end
 
 end
 
@@ -348,7 +351,7 @@ placement.draw = function(state,mx,my)
     texts = placement.draw_splitter_tool_overlay(state,mx,my)
   end
 
-  if texts then
+  if #texts > 0 then
     placement.draw_tooltip(mx,my,texts)
   end
 end
