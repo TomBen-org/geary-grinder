@@ -288,6 +288,19 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
   end
 end
 
+placement.draw_splitter_tool_overlay = function(state,mx,my)
+  local texts = {}
+  if placement.valid_splitter_placement(state,mx,my) then
+      love.graphics.setColor(placement_constants.build_active_color)
+      table.insert(texts,"Left click to build a splitter here")
+    else
+      love.graphics.setColor(placement_constants.build_collision_color)
+      table.insert(texts,"Cannot build here")
+    end
+    table.insert(texts,"Right Click to remove splitters")
+    love.graphics.rectangle("line",mx-65,my-40,130,80)
+end
+
 placement.draw = function(state,mx,my)
 
   if state.selected_tool == "gear" then
@@ -295,34 +308,8 @@ placement.draw = function(state,mx,my)
   elseif state.selected_tool == "belt" then
     placement.draw_belt_tool_overlay(state,mx,my)
   elseif state.selected_tool == "splitter" then
-    --placement.draw_splitter_tool_overlay(state)
+    placement.draw_splitter_tool_overlay(state,mx,my)
   end
-  --if internals.selected_gear then
-  --  --highlight selected_gear
-  --  local selected = internals.selected_gear
-  --  love.graphics.setColor(placement_constants.build_active_color)
-  --  love.graphics.circle("line",selected.position.x,selected.position.y,(selected.size*constants.size_mod)-1,50)
-  --end
-  --
-  --if state.selected_tool == 'belt' and internals.target_gear and internals.selected_gear then
-  --  --draw link option
-  --  if internals.target_gear.child then
-  --    love.graphics.setColor(placement_constants.build_active_color)
-  --  else
-  --    love.graphics.setColor(placement_constants.build_collision_color)
-  --  end
-  --  love.graphics.line(internals.target_gear.position.x,internals.target_gear.position.y,selected.position.x,selected.position.y)
-  --  love.graphics.circle("line",internals.target_gear.position.x,internals.target_gear.position.y,(internals.target_gear.size*constants.size_mod)-1,50)
-  --elseif state.selected_tool == 'gear' and not internals.hovered_gear then
-  --  --draw new_gear_radius
-  --  if internals.new_gear_valid then
-  --    love.graphics.setColor(placement_constants.build_active_color)
-  --  else
-  --    love.graphics.setColor(placement_constants.build_collision_color)
-  --  end
-  --  local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
-  --  love.graphics.circle("line",gx,gy,internals.new_gear_size*constants.size_mod,50)
-  --end
 
 end
 
