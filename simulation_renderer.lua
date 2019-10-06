@@ -186,7 +186,7 @@ local draw_gear = function(gear)
 
   for i=1, quantity/2 do
     local k = i*2
-    love.graphics.arc("fill","pie",pos.x,pos.y,(gear.size*constants.size_mod)+constants.working_depth/2,k*pitch,((k+1)*pitch),5)
+    love.graphics.arc("fill","pie",pos.x,pos.y,(gear.size*constants.size_mod)+constants.working_depth/2,k*pitch,((k+1)*pitch),1)
   end
 
   love.graphics.setColor(render_constants.colors["gear-inner"])
@@ -339,6 +339,10 @@ renderer.draw = function(camera, state)
   for _, sink in pairs(state.sinks) do
     draw_sink_indicators(sink)
   end
+  --local bounds = simulation.get_bounding_box(state)
+  --love.graphics.setColor({255,0,0})
+  --love.graphics.rectangle('line',bounds.x,bounds.y,bounds.width,bounds.height)
+
 end
 
 

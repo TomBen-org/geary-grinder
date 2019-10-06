@@ -18,6 +18,16 @@ simulation.create_state = function()
   }
 end
 
+simulation.get_bounding_box = function(state)
+  local y = constants.screen_h - (state.areas_available*constants.area_size)
+
+  --local y = constants.area_size * (state.areas_available-1) + 68
+  local x = constants.left_bar + constants.page_margin
+  local height = constants.area_size * state.areas_available - 50
+  local width = 1024 - constants.left_bar - constants.right_bar - constants.page_margin*2
+  return {x = x, y=y, width=width,height=height}
+end
+
 simulation.add_obstacle = function(state, position, width, height, depth)
   local new_obstacle =
   {

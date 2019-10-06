@@ -36,6 +36,11 @@ collisions.find_component_at = function(state,x,y)
   return nil
 end
 
+collisions.circle_inside_boundary = function(x,y,size,bx,by,bw,bh)
+  local r = size * constants.size_mod
+  return x-r > bx and x+r < bx+bw and y-r > by and y+r < by+bh
+end
+
 collisions.collide_circle_with_state = function(state,x,y,size,ignored_gear)
   local collided = {}
   for _, component in pairs(state.all_components) do

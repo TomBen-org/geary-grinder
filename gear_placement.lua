@@ -1,5 +1,6 @@
 local math2d = require("libs.vector-light")
 local collisions = require('collisions')
+local simulation = require('simulation')
 local constants = require('constants')
 local placement = {}
 
@@ -27,7 +28,18 @@ local update_new_gear_position = function(state,mx,my)
     local angle_to = math2d.angleTo(mx-cx,my-cy)
     local gx, gy = math2d.fromPolar(angle_to,(internals.selected_gear.size + internals.new_gear_size) * constants.size_mod)
     internals.new_gear_point = {x=cx+gx,y=cy+gy}
-    internals.new_gear_valid = #collisions.collide_circle_with_state(state,internals.new_gear_point.x,internals.new_gear_point.y,internals.new_gear_size) == 0
+    local no_collide = #collisions.collide_circle_with_state(state,internals.new_gear_point.x,internals.new_gear_point.y,internals.new_gear_size) == 0
+    local bounds = simulation.get_bounding_box(state)
+    local inside_boundary = collisions.circle_inside_boundary(
+      internals.new_gear_point.x,
+      internals.new_gear_point.y,
+      internals.new_gear_size,
+      bounds.x,
+      bounds.y,
+      bounds.width,
+      bounds.height
+    )
+    internals.new_gear_valid = no_collide and inside_boundary
   end
 end
 
