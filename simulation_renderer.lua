@@ -241,7 +241,7 @@ renderer.get_left_button_rects = function()
 
   local buttonMargin = 10
 
-  local current_y = 100
+  local current_y = 20
   for _, name in pairs{"gear", "belt", "splitter"} do
     rects[name] =
     {

@@ -40,7 +40,6 @@ function love.draw()
 
   camera:detach()
   --do window relative drawing here
-  love.graphics.print(camera.x..","..camera.y,10,10)
   --renderer.render_money_amount(state)
   renderer.render_render_left_gui(state)
   renderer.render_next_level_button(state)
