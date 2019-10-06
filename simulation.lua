@@ -42,13 +42,17 @@ simulation.update_source = function(source)
   end
 end
 
-simulation.add_sink = function(state, name, position, money_per_tick)
+simulation.add_sink = function(state, name, position, money_per_tick, case_height, case_width)
   local new_sink =
   {
     type = "sink",
     name = name,
     position = position,
     money_per_tick = money_per_tick,
+    casing = {
+      height = case_height or 40,
+      width = case_width or 40,
+    },
     components = {},
     satisfied = false,
   }
@@ -144,7 +148,7 @@ simulation.update_gear = function(gear, parent_size, parent_speed)
   end
 end
 
-simulation.add_splitter = function(state, position)
+simulation.add_splitter = function(state, position, case_height, case_width)
   local splitter_input =
   {
     type = "splitter_input",
@@ -154,6 +158,10 @@ simulation.add_splitter = function(state, position)
     connection_type = 'none',
     outputs = {},
     current_speed = 0,
+    casing = {
+      height = case_height or 40,
+      width = case_width or 40,
+    },
     rotation = 0,
     splitter = nil,
   }

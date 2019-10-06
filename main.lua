@@ -66,7 +66,8 @@ function love.keypressed(key)
 end
 
 function love.mousemoved(x,y)
-  placement.mouse_moved(state,x,y)
+  local w_x, w_y = camera:worldCoords(x, y)
+  placement.mouse_moved(state,w_x,w_y)
 end
 
 function love.wheelmoved(x,y)

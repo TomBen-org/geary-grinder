@@ -11,6 +11,8 @@ local render_constants = {
     ["source"] = {0.63,0.21,0.79},
     ["sink_part"] = {0.94,0.99,0.23},
     ["gear"] = rgb_255_to_1({172,230,241}),
+    ["gear-inner"] = rgb_255_to_1({132,218,234}),
+    ["peg"] = rgb_255_to_1({134,180,82}),
     ["sink"] = {0.23,0.49,0.78},
     ["link"] = {0.3,0.3,0.3},
     ["other"] = {1,1,1},
@@ -38,7 +40,7 @@ local draw_gear = function(gear)
 
   --draw everything as normal
   --draw body
-	love.graphics.setColor(render_constants.colors[gear.type] or render_constants.colors['other'])
+	love.graphics.setColor(render_constants.colors["gear"])
   love.graphics.circle('fill',pos.x,pos.y,(gear.size*constants.size_mod)-constants.whole_depth/2,30)
 
   --draw teeth
@@ -52,6 +54,15 @@ local draw_gear = function(gear)
     local k = i*2
     love.graphics.arc("fill","pie",pos.x,pos.y,(gear.size*constants.size_mod)+constants.working_depth/2,k*pitch,((k+1)*pitch),5)
   end
+
+  love.graphics.setColor(render_constants.colors["gear-inner"])
+  love.graphics.circle('fill',pos.x,pos.y,((gear.size*constants.size_mod)-constants.whole_depth/2)*0.8,30)
+
+  love.graphics.setColor(render_constants.colors["gear"])
+  love.graphics.circle('fill',pos.x,pos.y,((gear.size*constants.size_mod)-constants.whole_depth/2)*0.2,30)
+
+  love.graphics.setColor(render_constants.colors["peg"])
+  love.graphics.circle('fill',pos.x,pos.y,5,30)
 
 	love.graphics.setPointSize(5)
 	love.graphics.setColor(0, 0, 0)
