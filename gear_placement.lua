@@ -21,6 +21,10 @@ local internals = {
   build_active = false
 }
 
+local rgb_255_to_1 = function(color)
+  return {color[1]/255,color[2]/255,color[3]/255}
+end
+
 local draw_fake_belt = function(source,target,color)
   local x = source.position.x - target.position.x
   local y = source.position.y - target.position.y
@@ -308,13 +312,29 @@ placement.draw_splitter_tool_overlay = function(state,mx,my)
 end
 
 placement.draw_tooltip = function(mx,my,texts)
-  local top_left = {
+  local left_top = {
     x = mx + 10,
     y = my + 10
   }
-  --love.graphics.newText()
+  local text_objs = {}
+  local line_height = 0
+  local max_length = 0
+  for _, text in pairs(texts) do
+    local obj = love.graphics.newText(constants.fonts['small'],text)
+    if obj:getWidth() > max_length then
+      max_length = obj:getWidth()
+    end
+    if obj:getHeight() > line_height then
+      line_height = obj:getHeight()
+    end
+
+    table.insert(text_objs,obj)
+  end
+
   love.graphics.setColor({255,255,255})
-  --love.rectangle("fill")
+  --love.rectangle("fill",left_top.x,left_top.y,max_length+10,(line_height*#texts)+10)
+  --love.graphics.setColor()
+
 end
 
 placement.draw = function(state,mx,my)
