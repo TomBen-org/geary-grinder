@@ -25,11 +25,11 @@ function love.load()
 end
 
 function love.draw()
-  local mx, my = camera:worldCoords(love.mouse.getPosition())
 
   renderer.render_gui_background()
 
   camera:attach()
+  local mx, my = camera:worldCoords(love.mouse.getPosition())
   --do camera relative drawing here
   level_renderer.draw(10)
   --renderer.render_areas(state, camera)
@@ -42,9 +42,6 @@ function love.draw()
   renderer.render_render_left_gui(state)
   renderer.render_next_level_button(state)
 
-  camera:attach()
-  placement.draw(state)
-  camera:detach()
 end
 
 function love.resize()
@@ -101,6 +98,7 @@ function love.mousepressed(x,y,button)
         local new_gear = simulation.add_gear(state,result.size,result.position)
         if result.source then
           simulation.connect(result.source,new_gear,"gear")
+          placement.select_component(nil)
         end
         placement.select_component(new_gear)
       elseif result.type == 'connect' then
@@ -108,14 +106,17 @@ function love.mousepressed(x,y,button)
         placement.select_component(nil)
         if result.target.type == "gear" and result.target.child == nil then
           placement.select_component(result.target)
+          placement.select_component(nil)
         end
       elseif result.type == 'remove' then
         simulation.remove(state, result.target)
       elseif result.type == 'disconnect_belt' then
         placement.select_component(result.target.parent)
         simulation.disconnect_belt(result.target)
+        placement.select_component(nil)
       elseif result.type == 'new_splitter' then
         simulation.add_splitter(state, result.position)
+        placement.select_component(nil)
       end
     end
   end

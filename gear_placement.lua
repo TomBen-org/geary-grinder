@@ -218,6 +218,7 @@ placement.wheel_moved = function (state,x,y)
 end
 
 placement.draw_belt_tool_overlay = function(state,mx,my)
+  print(mx,my)
   local texts = {}
 
   if internals.selected_gear and internals.hovered_gear then
@@ -233,7 +234,7 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
     draw_fake_belt(internals.selected_gear,{position={x=mx,y=my}},placement_constants.build_inactive_color)
     table.insert(texts,"Left click a target to join")
 
-  elseif internals.hovered_gear then
+  elseif internals.hovered_gear and not internals.hovered_gear.type == "sink_part" then
     if internals.hovered_gear.child == nil then
       love.graphics.setLineWidth(1)
       love.graphics.setColor(placement_constants.build_inactive_color)
