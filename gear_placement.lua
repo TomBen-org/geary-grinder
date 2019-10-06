@@ -280,7 +280,8 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
       (constants.size_mod * internals.hovered_gear.size) + constants.whole_depth,
       30
     )
-    table.insert(texts,"Left click to start attaching new gears here")
+    table.insert(texts,"Left click to start")
+    table.insert(texts,"attaching new gears here")
   else
     table.insert(texts,"Mouse wheel to change size")
     if internals.new_gear_valid then
@@ -341,7 +342,7 @@ placement.draw_tooltip = function(mx,my,texts)
 
 end
 
-placement.draw = function(state,mx,my)
+placement.draw = function(state,mx,my,other_texts)
   local texts = {}
   if state.selected_tool == "gear" then
     texts = placement.draw_gear_tool_overlay(state,mx,my)
@@ -349,6 +350,10 @@ placement.draw = function(state,mx,my)
     texts = placement.draw_belt_tool_overlay(state,mx,my)
   elseif state.selected_tool == "splitter" then
     texts = placement.draw_splitter_tool_overlay(state,mx,my)
+  end
+
+  for _, text in pairs(other_texts) do
+    table.insert(texts,text)
   end
 
   if #texts > 0 then

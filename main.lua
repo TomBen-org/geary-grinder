@@ -23,7 +23,7 @@ function love.load()
   renderer.load()
 
   placement.load()
-  constants.fonts['small'] = love.graphics.newFont('/gfx/font-regular.ttf',12)
+  constants.fonts['small'] = love.graphics.newFont('/gfx/font-regular.ttf',8)
   constants.fonts['medium'] = love.graphics.newFont('/gfx/font-regular.ttf',16)
   constants.fonts['big'] = love.graphics.newFont('/gfx/font-regular.ttf',25)
   love.graphics.setFont(constants.fonts['small'])
@@ -40,7 +40,7 @@ function love.draw()
   --renderer.render_areas(state, camera)
   renderer.draw(camera, state)
 
-  placement.draw(state,mx,my)
+  placement.draw(state,mx,my,{" ","stuff one","cheese: 7/5"})
   camera:detach()
   --do window relative drawing here
   --renderer.render_money_amount(state)

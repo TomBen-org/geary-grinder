@@ -136,7 +136,7 @@ local draw_machine = function(machine)
 end
 
 local draw_sink_indicators = function(machine)
-  love.graphics.setFont(constants.fonts['small'])
+  love.graphics.setFont(constants.fonts['medium'])
   local percentage_satisfied = simulation.get_sink_percentage_satisfied(machine)
   if percentage_satisfied == 0 then
     love.graphics.setColor(render_constants.colors['buy_area_unavailable'])
