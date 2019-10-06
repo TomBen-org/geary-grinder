@@ -71,6 +71,7 @@ renderer.render_areas = function(state, camera)
 end
 
 renderer.render_gui_background = function()
+  love.graphics.clear(render_constants.colors.money_background)
   love.graphics.setColor(render_constants.colors.money_background)
   love.graphics.rectangle('fill', constants.screen_w - constants.right_bar, 0, constants.right_bar, constants.screen_h)
   love.graphics.rectangle('fill', 0, 0, constants.left_bar, constants.screen_h)

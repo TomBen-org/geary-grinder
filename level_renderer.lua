@@ -17,7 +17,7 @@ level_renderer.draw = function(level_number)
 
   if level_number > 1 then
     for l = 1, level_number do
-      love.graphics.draw(level_renderer.internals.gfx.middle,constants.left_bar,(l*-300) + first_level_y)
+      love.graphics.draw(level_renderer.internals.gfx.middle,constants.left_bar,(l*-312) + first_level_y)
     end
   end
 end

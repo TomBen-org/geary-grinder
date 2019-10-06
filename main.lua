@@ -29,13 +29,12 @@ function love.load()
 end
 
 function love.draw()
-  love.graphics.clear({0,0.34,0.73})
 
   renderer.render_gui_background()
 
   camera:attach()
   --do camera relative drawing here
-  level_renderer.draw(5)
+  level_renderer.draw(10)
   --renderer.render_areas(state, camera)
   placement.draw(state)
   renderer.draw(state)
