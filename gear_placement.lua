@@ -71,7 +71,11 @@ placement.mouse_pressed = function(state,x,y,button)
     --select gear
     if target_gear == nil then
       if state.selected_tool == 'gear' then
-        result = {type = 'new',source = nil, position = {x=x,y=y}, size = internals.new_gear_size}
+        local collide_free = collisions.collide_circle_with_state(state,x,y,internals.new_gear_size)
+        local inside_boundary = collisions.circle_inside_boundary(x,y,internals.new_gear_size)
+        if collide_free and inside_boundary then
+          result = {type = 'new',source = nil, position = {x=x,y=y}, size = internals.new_gear_size}
+        end
       end
     elseif (target_gear.type == 'gear' or target_gear.type == 'source') and target_gear.child == nil then
       internals.selected_gear = target_gear
