@@ -51,8 +51,8 @@ simulation.add_sink = function(state, name, position, money_per_tick, case_heigh
     position = position,
     money_per_tick = money_per_tick,
     casing = {
-      height = case_height or 40,
-      width = case_width or 40,
+      height = case_height or 100,
+      width = case_width or 200,
     },
     components = {},
     satisfied = false,
@@ -159,10 +159,6 @@ simulation.add_splitter = function(state, position, case_height, case_width)
     connection_type = 'none',
     outputs = {},
     current_speed = 0,
-    casing = {
-      height = case_height or 40,
-      width = case_width or 40,
-    },
     rotation = 0,
     splitter = nil,
   }
@@ -181,6 +177,10 @@ simulation.add_splitter = function(state, position, case_height, case_width)
   {
     type = "splitter",
     position = position,
+    casing = {
+      height = case_height or 80,
+      width = case_width or 130,
+    },
     input = splitter_input,
   }
   table.insert(state.splitters, new_splitter)

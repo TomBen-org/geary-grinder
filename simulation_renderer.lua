@@ -15,6 +15,7 @@ local render_constants = {
     ["peg"] = rgb_255_to_1({134,180,82}),
     ["sink"] = {0.23,0.49,0.78},
     ["link"] = {0.3,0.3,0.3},
+    ["blueprint-bg"] = rgb_255_to_1({29,117,189}),
     ["other"] = {1,1,1},
     ["money_background"] = {0.3, 0.3, 0.3},
     ["money_foreground"] = {1, 1, 0},
@@ -24,10 +25,28 @@ local render_constants = {
     ["left_bar_button"] = {0.5, 0.5, 0.5},
     ["selected_left_bar_button"] = {0.75, 0.75, 0.75},
     ["locked_area_tint"] = {1, 0, 0, 0.3}
+  },
+  line_widths = {
+    ["case"] = 2,
+    ["selection"] = 1,
   }
 }
 
+local draw_machine = function(machine)
+  local left_top = {
+    x = machine.position.x - machine.casing.width/2,
+    y = machine.position.y - machine.casing.height/2,
+  }
+  --love.graphics.setColor(render_constants.colors["gear-inner"])
+  --love.graphics.rectangle("fill",left_top.x+2,left_top.y+2,machine.casing.width,machine.casing.height)
+  love.graphics.setColor(render_constants.colors["blueprint-bg"])
+  love.graphics.rectangle("fill",left_top.x,left_top.y,machine.casing.width,machine.casing.height)
+  love.graphics.setLineWidth(render_constants.line_widths['case'])
+  love.graphics.setColor(render_constants.colors["gear"])
+  love.graphics.rectangle("line",left_top.x,left_top.y,machine.casing.width,machine.casing.height)
 
+  love.graphics.setLineWidth(render_constants.line_widths['selection'])
+end
 
 local draw_gear = function(gear)
   local pos = gear.position
@@ -163,17 +182,28 @@ renderer.draw = function(camera, state)
   local _, top_y = camera:worldCoords(0, 0)
 
   love.graphics.rectangle('fill', constants.left_bar, top_y, constants.screen_w - constants.left_bar - constants.right_bar - 1, constants.screen_h - (state.areas_available * constants.area_size) - top_y)
+  
+  for _, sink in pairs(state.sinks) do
+    draw_machine(sink)
+  end
+
+  for _, splitter in pairs(state.splitters) do
+    draw_machine(splitter)
+  end
 
   for _, component in pairs(state.all_components) do
     --love.graphics.setColor(render_constants.colors[component.type] or render_constants.colors['other'])
     --love.graphics.circle('line',component.position.x,component.position.y,component.size * constants.size_mod,50)
     draw_gear(component)
+
     if component.child then
       love.graphics.setColor(render_constants.colors["link"])
       love.graphics.line(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
     end
     love.graphics.print(tostring(component.size)..","..component.current_speed,component.position.x,component.position.y)
   end
+
+
 end
 
 
