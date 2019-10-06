@@ -23,8 +23,9 @@ local render_constants = {
     ["money_background"] = {0.3, 0.3, 0.3},
     ["money_foreground"] = {1, 1, 0},
     ["grid_color"] = {0.9,0.9,0.9},
-    ["buy_area_unavailable"] = {1, 0, 0},
-    ["buy_area_available"] = {0, 1, 0},
+    ["buy_area_unavailable"] = rgb_255_to_1({190,9,0}),
+    ["buy_area_available"] = rgb_255_to_1({20,213,43}),
+    ["medium_quality"] = rgb_255_to_1({255,180,23}),
     ["left_bar_button"] = {0.5, 0.5, 0.5},
     ["selected_left_bar_button"] = {0.75, 0.75, 0.75},
     ["locked_area_tint"] = {1, 0, 0, 0.3}
@@ -135,13 +136,14 @@ local draw_machine = function(machine)
 end
 
 local draw_sink_indicators = function(machine)
+  love.graphics.setFont(constants.fonts['small'])
   local percentage_satisfied = simulation.get_sink_percentage_satisfied(machine)
   if percentage_satisfied == 0 then
-    love.graphics.setColor{1,0,0}
+    love.graphics.setColor(render_constants.colors['buy_area_unavailable'])
   elseif percentage_satisfied < 1 then
-    love.graphics.setColor{1,1,0}
+    love.graphics.setColor(render_constants.colors['medium_quality'])
   elseif percentage_satisfied == 1 then
-    love.graphics.setColor{0,1,0}
+    love.graphics.setColor(render_constants.colors['buy_area_available'])
   end
 
   love.graphics.circle('fill', machine.position.x, machine.position.y - machine.casing.height/2 + 10, 8)
@@ -156,19 +158,19 @@ local draw_sink_indicators = function(machine)
       speedText = string.format("%.2f", absSpeed)
     end
 
-    local text = love.graphics.newText(love.graphics.getFont(), speedText .. "/" .. gear.speed_max)
+    local text = love.graphics.newText(love.graphics.getFont(), speedText .. " / " .. gear.speed_max)
     local textWidth, textHeight = text:getDimensions()
 
     if absSpeed < gear.speed_min then
-      love.graphics.setColor{1,0,0}
+      love.graphics.setColor(render_constants.colors['buy_area_unavailable'])
     elseif absSpeed < gear.speed_max then
-      love.graphics.setColor{1,1,0}
+      love.graphics.setColor(render_constants.colors['medium_quality'])
     elseif absSpeed == gear.speed_max then
-      love.graphics.setColor{0,1,0}
+      love.graphics.setColor(render_constants.colors['buy_area_available'])
     else
-      love.graphics.setColor{1,0,0}
+      love.graphics.setColor(render_constants.colors['buy_area_unavailable'])
     end
-    love.graphics.draw(text, gear.position.x - textWidth/2, gear.position.y - gear.size*constants.size_mod - 20)
+    love.graphics.draw(text, gear.position.x - textWidth/2, gear.position.y - gear.size*constants.size_mod - 30)
   end
 end
 
@@ -243,6 +245,7 @@ renderer.get_buy_button_rect = function(state)
 end
 
 renderer.render_next_level_button = function(state)
+  love.graphics.setFont(constants.fonts['medium'])
   --local money_height = (state.money / state.next_price) * state.areas_available * constants.area_size
   --love.graphics.setColor(render_constants.colors.money_foreground)
   --love.graphics.rectangle('fill', constants.screen_w - constants.right_bar, constants.screen_h - money_height, constants.right_bar, money_height)
@@ -314,7 +317,8 @@ renderer.draw = function(camera, state)
 
 
   for i=1,state.areas_available do
-    love.graphics.setColor{0,0,0}
+    love.graphics.setColor{1,1,1}
+    love.graphics.setFont(constants.fonts['big'])
     local text = love.graphics.newText(love.graphics.getFont(), "Level " .. i)
     local textWidth, textHeight = text:getDimensions()
     love.graphics.draw(text, constants.screen_w / 2 - textWidth/2, constants.screen_h - constants.area_size*i)

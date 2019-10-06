@@ -15,7 +15,8 @@ local constants =
   teeth_per_size = 12,
   working_depth = 6,
   whole_depth = 14,
-  page_margin = 36
+  page_margin = 36,
+  fonts = {},
 }
 
 return constants

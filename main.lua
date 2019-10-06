@@ -23,6 +23,10 @@ function love.load()
   renderer.load()
 
   placement.load()
+  constants.fonts['small'] = love.graphics.newFont('/gfx/font-regular.ttf',12)
+  constants.fonts['medium'] = love.graphics.newFont('/gfx/font-regular.ttf',16)
+  constants.fonts['big'] = love.graphics.newFont('/gfx/font-regular.ttf',25)
+  love.graphics.setFont(constants.fonts['small'])
 end
 
 function love.draw()

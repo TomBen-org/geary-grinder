@@ -245,6 +245,8 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
       table.insert(texts,"Right Click to delete belts on this gear")
     end
   end
+
+  return texts
 end
 
 placement.draw_gear_tool_overlay = function(state,mx,my)
@@ -286,31 +288,48 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
     local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
     love.graphics.circle("line",gx,gy,(internals.new_gear_size*constants.size_mod)-(constants.working_depth*2),50)
   end
+
+  return texts
 end
 
 placement.draw_splitter_tool_overlay = function(state,mx,my)
   local texts = {}
   if placement.valid_splitter_placement(state,mx,my) then
-      love.graphics.setColor(placement_constants.build_active_color)
-      table.insert(texts,"Left click to build a splitter here")
-    else
-      love.graphics.setColor(placement_constants.build_collision_color)
-      table.insert(texts,"Cannot build here")
-    end
-    table.insert(texts,"Right Click to remove splitters")
-    love.graphics.rectangle("line",mx-65,my-40,130,80)
+    love.graphics.setColor(placement_constants.build_active_color)
+    table.insert(texts,"Left click to build a splitter here")
+  else
+    love.graphics.setColor(placement_constants.build_collision_color)
+    table.insert(texts,"Cannot build here")
+  end
+  table.insert(texts,"Right Click to remove splitters")
+  love.graphics.rectangle("line",mx-65,my-40,130,80)
+
+  return texts
+end
+
+placement.draw_tooltip = function(mx,my,texts)
+  local top_left = {
+    x = mx + 10,
+    y = my + 10
+  }
+  --love.graphics.newText()
+  love.graphics.setColor({255,255,255})
+  --love.rectangle("fill")
 end
 
 placement.draw = function(state,mx,my)
-
+  local texts = {}
   if state.selected_tool == "gear" then
-    placement.draw_gear_tool_overlay(state,mx,my)
+    texts = placement.draw_gear_tool_overlay(state,mx,my)
   elseif state.selected_tool == "belt" then
-    placement.draw_belt_tool_overlay(state,mx,my)
+    texts = placement.draw_belt_tool_overlay(state,mx,my)
   elseif state.selected_tool == "splitter" then
-    placement.draw_splitter_tool_overlay(state,mx,my)
+    texts = placement.draw_splitter_tool_overlay(state,mx,my)
   end
 
+  if texts then
+    placement.draw_tooltip(mx,my,texts)
+  end
 end
 
 
