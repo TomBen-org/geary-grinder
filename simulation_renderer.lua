@@ -2,11 +2,15 @@ local renderer = {}
 
 local constants = require('constants')
 
+local rgb_255_to_1 = function(color)
+  return {color[1]/255,color[2]/255,color[3]/255}
+end
+
 local render_constants = {
   colors = {
     ["source"] = {0.63,0.21,0.79},
     ["sink_part"] = {0.94,0.99,0.23},
-    ["gear"] = {1,0.69,0.23},
+    ["gear"] = rgb_255_to_1({172,230,241}),
     ["sink"] = {0.23,0.49,0.78},
     ["link"] = {0.3,0.3,0.3},
     ["other"] = {1,1,1},
@@ -19,6 +23,8 @@ local render_constants = {
     ["selected_left_bar_button"] = {0.75, 0.75, 0.75},
   }
 }
+
+
 
 local draw_gear = function(gear)
   local pos = gear.position
