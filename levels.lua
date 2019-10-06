@@ -11,7 +11,7 @@ levels[1] = function(state)
 
   local source = simulation.add_source(state, "basic_source", 6, 5, {x = left, y = y})
   local sink = simulation.add_sink(state, "basic_sink", {x = right-50, y = y-50}, 1/60)
-  simulation.add_sink_part(state, sink, "basic_sink_part_1", 3, 9, 13,{x = right, y = y})
+  simulation.add_sink_part(state, sink, "basic_sink_part_1", 3, 9, 10,{x = right, y = y})
 
   state.next_price = 10
   simulation.add_obstacle(state,{x=500,y=350},40,200,1)

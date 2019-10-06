@@ -150,6 +150,29 @@ local draw_gear = function(gear)
 
   love.graphics.pop()
 
+  if gear.type == "sink_part" then
+    local absSpeed = math.abs(gear.current_speed)
+    local speedText
+    if absSpeed == math.floor(absSpeed) then
+      speedText = tostring(absSpeed)
+    else
+      speedText = string.format("%.2f", absSpeed)
+    end
+
+    local text = love.graphics.newText(love.graphics.getFont(), speedText .. "/" .. gear.speed_max)
+    local textWidth, textHeight = text:getDimensions()
+
+    if absSpeed < gear.speed_min then
+      love.graphics.setColor{1,0,0}
+    elseif absSpeed < gear.speed_max then
+      love.graphics.setColor{1,1,0}
+    elseif absSpeed == gear.speed_max then
+      love.graphics.setColor{0,1,0}
+    else
+      love.graphics.setColor{1,0,0}
+    end
+    love.graphics.draw(text, gear.position.x - textWidth/2, gear.position.y - gear.size*constants.size_mod - 20)
+  end
 end
 
 renderer.render_areas = function(state, camera)
@@ -265,6 +288,7 @@ renderer.draw = function(camera, state)
     --  love.graphics.setColor(render_constants.colors["link"])
     --  love.graphics.line(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
     --end
+    love.graphics.setColor{0,0,0}
     love.graphics.print(tostring(component.size)..","..component.current_speed,component.position.x,component.position.y)
   end
 
