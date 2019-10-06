@@ -8,6 +8,7 @@ simulation.create_state = function()
     sources = {},
     sinks = {},
     splitters = {},
+    obstacles = {},
     all_components = {},
     money = 0,
     last_income = 0,
@@ -15,6 +16,21 @@ simulation.create_state = function()
     next_price = 0,
     selected_tool = "gear",
   }
+end
+
+simulation.add_obstacle = function(state, position, width, height, depth)
+  local new_obstacle =
+  {
+    type = "obstacle",
+    position = position,
+    depth = depth,
+    casing = {
+      height = height or 80,
+      width = width or 130,
+    },
+  }
+
+  table.insert(state.obstacles, new_obstacle)
 end
 
 simulation.add_source = function(state, name, size, speed, position)

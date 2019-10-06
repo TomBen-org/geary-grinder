@@ -14,6 +14,8 @@ levels[1] = function(state)
   simulation.add_sink_part(state, sink, "basic_sink_part_1", 3, 9, 13,{x = right, y = y})
 
   state.next_price = 10
+  simulation.add_obstacle(state,{x=500,y=350},40,200,1)
+
 end
 
 levels[2] = function(state)
