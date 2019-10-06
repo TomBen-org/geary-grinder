@@ -98,12 +98,11 @@ end
 
 simulation.update_sink_part = function(sink_part, parent_size, parent_speed)
   assert(sink_part.type == "sink_part")
-  sink_part.current_speed = parent_speed * (parent_size / sink_part.size)
-  if sink_part.connection_type ~= 'belt' then
-    sink_part.current_speed = -sink_part.current_speed
+  sink_part.current_speed = -parent_speed * (parent_size / sink_part.size)
+  if sink_part.connection_type == 'belt' then
+    sink_part.current_speed = parent_speed
   end
 
-  sink_part.satisfied = sink_part.current_speed >= sink_part.speed_min
   sink_part.rotation = sink_part.rotation + (sink_part.current_speed*math.pi/1000)
 end
 
@@ -128,9 +127,9 @@ end
 simulation.update_gear = function(gear, parent_size, parent_speed)
   assert(gear.type == "gear")
 
-  gear.current_speed = parent_speed * (parent_size / gear.size)
-  if gear.connection_type ~= 'belt' then
-    gear.current_speed = -gear.current_speed
+  gear.current_speed = -parent_speed * (parent_size / gear.size)
+  if gear.connection_type == 'belt' then
+    gear.current_speed = parent_speed
   end
 
   gear.rotation = gear.rotation + (gear.current_speed*math.pi/1000)
@@ -178,9 +177,9 @@ end
 simulation.update_splitter_input = function(splitter_input, parent_size, parent_speed)
   assert(splitter_input.type == "splitter_input")
 
-  splitter_input.current_speed = parent_speed * (parent_size / splitter_input.size)
-  if splitter_input.connection_type ~= 'belt' then
-    splitter_input.current_speed = -splitter_input.current_speed
+  splitter_input.current_speed = -parent_speed * (parent_size / splitter_input.size)
+  if splitter_input.connection_type == 'belt' then
+    splitter_input.current_speed = parent_speed
   end
 
   splitter_input.rotation = splitter_input.rotation + (splitter_input.current_speed*math.pi/1000)
