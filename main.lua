@@ -20,6 +20,7 @@ function love.load()
   levels[1](state)
 
   level_renderer.load()
+  renderer.load()
 
   placement.load()
 end

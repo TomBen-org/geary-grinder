@@ -36,6 +36,16 @@ local render_constants = {
   }
 }
 
+
+local gfx = {}
+
+renderer.load = function()
+  gfx.gear = love.graphics.newImage('/gfx/cog.png')
+  gfx.belt = love.graphics.newImage('/gfx/belt.png')
+  gfx.splitter = love.graphics.newImage('/gfx/splitter.png')
+end
+
+
 local draw_belt = function(component)
   local x = component.position.x - component.child.position.x
   local y = component.position.y - component.child.position.y
@@ -279,8 +289,13 @@ renderer.render_render_left_gui = function(state)
       love.graphics.setColor(render_constants.colors.left_bar_button)
     end
     love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
-    love.graphics.setColor{0,0,0}
-    love.graphics.print(name, rect[1], rect[2])
+    --love.graphics.setColor{0,0,0}
+    --love.graphics.print(name, rect[1], rect[2])
+
+    local tex = gfx[name]
+    local w, h = tex:getDimensions()
+
+    love.graphics.draw(tex, rect[1], rect[2], 0, rect[3]/w, rect[4]/h)
   end
 end
 
