@@ -246,7 +246,7 @@ renderer.get_buy_button_rect = function(state)
   return {constants.screen_w - constants.right_bar + 20, 20, constants.right_bar - 40, 100}
 end
 
-renderer.render_next_level_button = function(state)
+renderer.render_right_gui = function(state)
   love.graphics.setFont(constants.fonts['medium'])
   --local money_height = (state.money / state.next_price) * state.areas_available * constants.area_size
   --love.graphics.setColor(render_constants.colors.money_foreground)
@@ -268,6 +268,31 @@ renderer.render_next_level_button = function(state)
   if simulation.all_sinks_satisfied(state) and state.tick % 60 < 30 then
     love.graphics.setColor{1,1,0,0.5}
     love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
+  end
+
+  local y = 300
+  local x = constants.screen_w - constants.right_bar + 10
+  for i=1,state.areas_available do
+    --love.graphics.print("Level " .. i, x, y)
+    local text = love.graphics.newText(constants.fonts['medium'], "Level " .. i)
+    love.graphics.setColor{1,1,1}
+    love.graphics.draw(text, x, y)
+
+    local sink = state.sinks[i]
+
+    local percentage_satisfied = simulation.get_sink_percentage_satisfied(sink)
+    if percentage_satisfied == 0 then
+      love.graphics.setColor(render_constants.colors['buy_area_unavailable'])
+    elseif percentage_satisfied < 1 then
+      love.graphics.setColor(render_constants.colors['medium_quality'])
+    elseif percentage_satisfied == 1 then
+      love.graphics.setColor(render_constants.colors['buy_area_available'])
+    end
+
+
+    love.graphics.circle('fill', x + 80, y+5, 5)
+
+    y = y + 30
   end
 end
 

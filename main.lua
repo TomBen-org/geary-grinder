@@ -105,7 +105,7 @@ function love.draw()
   --do window relative drawing here
   --renderer.render_money_amount(state)
   renderer.render_render_left_gui(state)
-  renderer.render_next_level_button(state)
+  renderer.render_right_gui(state)
 
 end
 
