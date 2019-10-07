@@ -45,7 +45,7 @@ function love.draw()
   --renderer.render_areas(state, camera)
   renderer.draw(camera, state)
 
-  placement.draw(state,mx,my,{" ","stuff one","cheese: 7/5"})
+  placement.draw(state,mx,my,{})
   camera:detach()
   --do window relative drawing here
   --renderer.render_money_amount(state)

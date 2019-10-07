@@ -225,6 +225,7 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
   local texts = {}
 
   if internals.selected_gear and internals.hovered_gear then
+
     local color = placement_constants.build_collision_color
     if valid_belt_placement(state, internals.selected_gear,internals.hovered_gear) then
       color = placement_constants.build_active_color
@@ -235,6 +236,7 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
 
   elseif internals.selected_gear and not internals.hovered_gear then
 
+
     local color = placement_constants.build_collision_color
     if valid_belt_preview_placement(state, internals.selected_gear, {x=mx,y=my}) then
       color = placement_constants.build_inactive_color
@@ -244,7 +246,7 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
     draw_fake_belt(internals.selected_gear,{position={x=mx,y=my}}, color)
     table.insert(texts,"Left click a target to join")
 
-  elseif internals.hovered_gear and not internals.hovered_gear.type == "sink_part" then
+  elseif internals.hovered_gear and internals.hovered_gear.type ~= "sink_part" then
     if internals.hovered_gear.child == nil then
       love.graphics.setLineWidth(1)
       love.graphics.setColor(placement_constants.build_inactive_color)
@@ -331,14 +333,14 @@ end
 
 placement.draw_tooltip = function(mx,my,texts)
   local left_top = {
-    x = mx + 10,
-    y = my + 10
+    x = mx + 30,
+    y = my + 30
   }
   local text_objs = {}
   local line_height = 0
   local max_length = 0
   for _, text in pairs(texts) do
-    local obj = love.graphics.newText(constants.fonts['small'],text)
+    local obj = love.graphics.newText(constants.fonts['medium'],text)
     if obj:getWidth() > max_length then
       max_length = obj:getWidth()
     end
