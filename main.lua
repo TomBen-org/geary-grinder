@@ -181,7 +181,7 @@ function love.mousepressed(x,y,button)
           simulation.connect(result.source,new_gear,"gear")
           placement.select_component(nil)
         end
-        placement.select_component(new_gear)
+        --placement.select_component(new_gear)
       elseif result.type == 'connect' then
         simulation.connect(result.source,result.target, "belt")
         placement.select_component(nil)
