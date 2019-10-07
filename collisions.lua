@@ -42,6 +42,13 @@ collisions.circle_inside_boundary = function(x,y,size,bx,by,bw,bh)
   return x-r > bx and x+r < bx+bw and y-r > by and y+r < by+bh
 end
 
+collisions.rectangle_inside_boundary = function(x, y, w, h, bx, by, bw, bh)
+  return point_in_rectangle(x, y, bx, by, bw, bh) and
+         point_in_rectangle(x+w, y, bx, by, bw, bh) and
+         point_in_rectangle(x+w, y+h, bx, by, bw, bh) and
+         point_in_rectangle(x, y+h, bx, by, bw, bh)
+end
+
 local make_HC_state_for_gears = function(state, ignored, collider)
 	local collider = HC.new(150)
 
@@ -101,6 +108,17 @@ collisions.collide_circle_with_state = function(state,x,y,size, ignored)
 
   local circle = collider:circle(x, y, size*constants.size_mod)
 	if next(collider:collisions(circle)) then
+		return true
+	end
+
+	return false
+end
+
+collisions.collide_machine_rect_with_state = function(state, x, y, w, h)
+  local collider = make_HC_state_for_gears(state, ignored)
+
+  local rect = collider:rectangle(x, y, w, h)
+	if next(collider:collisions(rect)) then
 		return true
 	end
 

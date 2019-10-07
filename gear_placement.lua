@@ -80,8 +80,20 @@ local draw_fake_belt = function(source,target,color)
   love.graphics.setColor(255,255,255)
 end
 
+placement.get_splitter_preview_rect = function(x, y)
+  return {x-95,y-90,190,180}
+end
+
 placement.valid_splitter_placement = function(state,x,y)
-  return true
+  local rect = placement.get_splitter_preview_rect(x, y)
+  local bounds = simulation.get_bounding_box(state)
+
+  return not collisions.collide_machine_rect_with_state(state,rect[1], rect[2], rect[3], rect[4]) and
+         collisions.rectangle_inside_boundary(rect[1], rect[2], rect[3], rect[4],
+                                              bounds.x,
+                                              bounds.y,
+                                              bounds.width,
+                                              bounds.height)
 end
 
 placement.valid_circle_placement = function(state,x,y,s,ignore_gear)
@@ -149,8 +161,9 @@ placement.mouse_pressed = function(state,x,y,button)
   end
 
   if button == 1 and state.selected_tool == 'splitter' then
-    -- TODO: collision check this
-    result = {type = 'new_splitter', position = {x = x, y = y}}
+    if placement.valid_splitter_placement(state, x, y) then
+      result = {type = 'new_splitter', position = {x = x, y = y}}
+    end
   end
 
   if button == 1 and not internals.selected_gear then
@@ -327,7 +340,9 @@ end
 
 placement.draw_splitter_tool_overlay = function(state,mx,my)
   local texts = {}
-  if placement.valid_splitter_placement(state,mx,my) then
+
+
+  if placement.valid_splitter_placement(state,mx, my) then
     love.graphics.setColor(placement_constants.build_active_color)
     table.insert(texts,"Left click to build a splitter here")
   else
@@ -335,7 +350,9 @@ placement.draw_splitter_tool_overlay = function(state,mx,my)
     table.insert(texts,"Cannot build here")
   end
   table.insert(texts,"Right Click to remove splitters")
-  love.graphics.rectangle("line",mx-65,my-40,130,80)
+
+  local rect = placement.get_splitter_preview_rect(mx, my)
+  love.graphics.rectangle("line",rect[1], rect[2], rect[3], rect[4])
 
   return texts
 end
@@ -366,7 +383,6 @@ placement.draw_tooltip = function(mx,my,texts)
   for num, obj in pairs(text_objs) do
     love.graphics.draw(obj,left_top.x + 5, left_top.y + 5 + (line_height*(num-1)))
   end
-
 end
 
 placement.draw = function(state,mx,my,other_texts)
