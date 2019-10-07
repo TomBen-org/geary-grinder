@@ -11,6 +11,7 @@ local state
 local camera
 
 local win_screen
+local thunk
 
 function love.load()
   local screen_width, screen_height = love.graphics.getDimensions()
@@ -34,6 +35,8 @@ function love.load()
   local bgm = love.audio.newSource("/sfx/Gears of DAW.wav", "stream")
   bgm:setLooping(true)
   love.audio.play(bgm)
+
+  thunk = love.audio.newSource("/sfx/thunk.wav", "stream")
 
   win_screen = love.graphics.newImage("/gfx/win_screen.png")
 end
@@ -171,6 +174,7 @@ function love.mousepressed(x,y,button)
   else
     local result = placement.mouse_pressed(state,w_x,w_y,button)
     if result and result.type then
+      love.audio.play(thunk)
       if result.type == 'new' then
         local new_gear = simulation.add_gear(state,result.size,result.position)
         if result.source then
