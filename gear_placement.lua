@@ -155,6 +155,10 @@ end
 
 
 placement.mouse_pressed = function(state,x,y,button)
+
+  update_new_gear_position(state)
+
+
   local result = nil
   local target_gear = collisions.find_component_at(state,x,y)
   if target_gear then
@@ -171,7 +175,7 @@ placement.mouse_pressed = function(state,x,y,button)
     --select gear
     if target_gear == nil then
       if state.selected_tool == 'gear' then
-        local valid_placement = placement.valid_circle_placement(state,x,y,internals.new_gear_size)
+        local valid_placement = placement.valid_circle_placement(state,internals.new_gear_point.x,internals.new_gear_point.y,internals.new_gear_size)
 
         if valid_placement then
           result = {type = 'new',source = nil, position = {x=x,y=y}, size = internals.new_gear_size}
@@ -188,7 +192,7 @@ placement.mouse_pressed = function(state,x,y,button)
     if state.selected_tool == 'belt' and target_gear and valid_belt_placement(state, selected, target_gear) then
       --connect two gears with a chain
       result = {type='connect',source = selected,target = target_gear}
-    elseif state.selected_tool == 'gear' and placement.valid_circle_placement(state, x, y, internals.new_gear_size) then
+    elseif state.selected_tool == 'gear' and placement.valid_circle_placement(state, internals.new_gear_point.x, internals.new_gear_point.y, internals.new_gear_size) then
       --place a new gear and select it
       result = {type = 'new',source = selected, position = point, size = size}
     end
@@ -209,7 +213,6 @@ placement.mouse_pressed = function(state,x,y,button)
     internals.selected_gear = nil
   end
 
-  update_new_gear_position(state)
 
   return result
 end
