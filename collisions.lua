@@ -42,7 +42,7 @@ collisions.circle_inside_boundary = function(x,y,size,bx,by,bw,bh)
   return x-r > bx and x+r < bx+bw and y-r > by and y+r < by+bh
 end
 
-local make_HC_state = function(state, ignored)
+local make_HC_state_for_gears = function(state, ignored, collider)
 	local collider = HC.new(150)
 
   for _, component in pairs(state.all_components) do
@@ -66,9 +66,38 @@ local make_HC_state = function(state, ignored)
 	return collider
 end
 
+local add_belt_to_collider = function(collider, src, dest)
+  local dist = math2d.dist(src.x, src.y, dest.x, dest.y)
+
+  local x, y = math2d.sub(dest.x, dest.y, src.x, src.y)
+  local angle = math.atan2(y, x) + math.pi/2
+
+  local rect = collider:rectangle(src.x - constants.size_mod, src.y - dist, constants.size_mod * 2, dist - constants.size_mod * 2)
+  rect:rotate(angle, src.x, src.y)
+
+  return rect
+end
+
+local make_HC_state_for_belts = function(state)
+	local collider = HC.new(150)
+
+  for _, component in pairs(state.all_components) do
+    if component.connection_type == "belt" then
+      add_belt_to_collider(collider, component.parent.position, component.position)
+    end
+  end
+
+  for _, obstacle in pairs(state.obstacles) do
+		collider:rectangle(obstacle.position.x, obstacle.position.y, obstacle.casing.width, obstacle.casing.height)
+  end
+
+	return collider
+end
+
+
 
 collisions.collide_circle_with_state = function(state,x,y,size, ignored)
-	local collider = make_HC_state(state, ignored)
+	local collider = make_HC_state_for_gears(state, ignored)
 
   local circle = collider:circle(x, y, size*constants.size_mod)
 	if next(collider:collisions(circle)) then
@@ -78,5 +107,17 @@ collisions.collide_circle_with_state = function(state,x,y,size, ignored)
 	return false
 end
 
+collisions.collide_belt_with_state = function(state, src_position, dest_position)
+  assert(src_position.x and dest_position.x) -- gimme a position not a gear!
+
+  local collider = make_HC_state_for_belts(state)
+  local belt = add_belt_to_collider(collider, src_position, dest_position)
+
+	if next(collider:collisions(belt)) then
+		return true
+	end
+
+	return false
+end
 
 return collisions
