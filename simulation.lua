@@ -5,6 +5,8 @@ local simulation = {}
 simulation.create_state = function()
   return
   {
+    tick = 0,
+    flash_up_button = false,
     sources = {},
     sinks = {},
     splitters = {},
@@ -322,6 +324,8 @@ simulation.update_recursive = function(component, parent_size, parent_speed)
 end
 
 simulation.update = function(state)
+  state.tick = state.tick + 1
+
   local money_before = state.money
 
   for _, component in pairs(state.all_components) do

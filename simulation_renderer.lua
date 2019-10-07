@@ -44,6 +44,8 @@ renderer.load = function()
   gfx.gear = love.graphics.newImage('/gfx/cog.png')
   gfx.belt = love.graphics.newImage('/gfx/belt.png')
   gfx.splitter = love.graphics.newImage('/gfx/splitter.png')
+  gfx.up = love.graphics.newImage('/gfx/up.png')
+  gfx.down = love.graphics.newImage('/gfx/down.png')
 end
 
 
@@ -261,6 +263,12 @@ renderer.render_next_level_button = function(state)
   local text = love.graphics.newText(love.graphics.getFont(), "Next\nlevel")
   local textWidth, textHeight = text:getDimensions()
   love.graphics.draw(text, rect[1] + rect[3]/2 - textWidth/2, rect[2] + rect[4]/2 - textHeight/2)
+
+
+  if simulation.all_sinks_satisfied(state) and state.tick % 60 < 30 then
+    love.graphics.setColor{1,1,0,0.5}
+    love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
+  end
 end
 
 renderer.get_left_button_rects = function()
@@ -269,7 +277,7 @@ renderer.get_left_button_rects = function()
   local buttonMargin = 10
 
   local current_y = 20
-  for _, name in pairs{"gear", "belt", "splitter"} do
+  for _, name in pairs{"gear", "belt", "splitter", "up", "down"} do
     rects[name] =
     {
       buttonMargin,
@@ -299,6 +307,11 @@ renderer.render_render_left_gui = function(state)
     local w, h = tex:getDimensions()
 
     love.graphics.draw(tex, rect[1], rect[2], 0, rect[3]/w, rect[4]/h)
+
+    if state.flash_up_button and name == "up" and state.tick % 60 < 30 then
+      love.graphics.setColor{1,1,0,0.5}
+      love.graphics.rectangle('fill', rect[1], rect[2], rect[3], rect[4])
+    end
   end
 end
 

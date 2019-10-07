@@ -52,7 +52,7 @@ end
 function love.resize()
 end
 
-function love.keypressed(key)
+local move_camera = function(key)
   if key == "down" and camera.y < 384 then
     camera:lookAt(camera.x,camera.y + 100)
   elseif key == "up" then
@@ -60,6 +60,12 @@ function love.keypressed(key)
   elseif key == "x" then
     camera:lookAt(camera.x,384)
   end
+
+  state.flash_up_button = false
+end
+
+function love.keypressed(key)
+  move_camera(key)
 end
 
 function love.mousemoved(x,y)
@@ -83,8 +89,13 @@ function love.mousepressed(x,y,button)
 
   for name, rect in pairs(left_gui_buttons) do
     if rect_clicked(x, y, rect) then
-      state.selected_tool = name
-      placement.select_component(nil)
+
+      if name == "up" or name == "down" then
+        move_camera(name)
+      else
+        state.selected_tool = name
+        placement.select_component(nil)
+      end
       return
     end
   end
@@ -95,6 +106,8 @@ function love.mousepressed(x,y,button)
 
       local level_index = math.min(state.areas_available, #levels)
       levels[level_index](state)
+
+      state.flash_up_button = true
     end
   else
     local result = placement.mouse_pressed(state,w_x,w_y,button)
