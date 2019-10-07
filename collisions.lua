@@ -42,6 +42,10 @@ collisions.circle_inside_boundary = function(x,y,size,bx,by,bw,bh)
   return x-r > bx and x+r < bx+bw and y-r > by and y+r < by+bh
 end
 
+collisions.point_inside_boundary = function(x,y,bx,by,bw,bh)
+  return x > bx and x < bx+bw and y > by and y < by+bh
+end
+
 collisions.rectangle_inside_boundary = function(x, y, w, h, bx, by, bw, bh)
   return point_in_rectangle(x, y, bx, by, bw, bh) and
          point_in_rectangle(x+w, y, bx, by, bw, bh) and

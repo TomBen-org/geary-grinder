@@ -25,7 +25,7 @@ function love.load()
   level_renderer.load()
   renderer.load()
 
-  placement.load()
+  placement.load(camera)
   constants.fonts['small'] = love.graphics.newFont('/gfx/font-regular.ttf',8)
   constants.fonts['medium'] = love.graphics.newFont('/gfx/font-regular.ttf',16)
   constants.fonts['big'] = love.graphics.newFont('/gfx/font-regular.ttf',25)

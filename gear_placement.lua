@@ -111,7 +111,7 @@ end
 
 local update_new_gear_position = function(state,mx,my)
   if not (mx and my) then
-    mx, my = love.mouse.getPosition()
+    mx, my = internals.camera:worldCoords(love.mouse.getPosition())
   end
   if internals.selected_gear then
     local cx,cy = internals.selected_gear.position.x,internals.selected_gear.position.y
@@ -128,12 +128,13 @@ local update_new_gear_position = function(state,mx,my)
   )
 end
 
-placement.load = function()
+placement.load = function(camera)
   local screen_width, screen_height = love.graphics.getDimensions()
   internals.connection_point = {
     x = screen_width/2,
     y = screen_height/2
   }
+  internals.camera = camera
 end
 
 placement.select_component = function(component)
@@ -271,12 +272,12 @@ placement.draw_belt_tool_overlay = function(state,mx,my)
       )
       table.insert(texts,"Left Click to start a new belt link")
     end
-    if internals.hovered_gear.child and internals.hovered_gear.connection_type == "belt" then
-      draw_fake_belt(internals.hovered_gear,internals.hovered_gear.child,placement_constants.build_collision_color)
-    end
-    if internals.hovered_gear.parent and internals.hovered_gear.parent.connection_type == "belt" then
-      draw_fake_belt(internals.hovered_gear.parent,internals.hovered_gear,placement_constants.build_collision_color)
-    end
+    --if internals.hovered_gear.child and internals.hovered_gear.connection_type == "belt" then
+    --  draw_fake_belt(internals.hovered_gear,internals.hovered_gear.child,placement_constants.build_collision_color)
+    --end
+    --if internals.hovered_gear.parent and internals.hovered_gear.parent.connection_type == "belt" then
+    --  draw_fake_belt(internals.hovered_gear.parent,internals.hovered_gear,placement_constants.build_collision_color)
+    --end
     if internals.hovered_gear.parent or internals.hovered_gear.child then
       table.insert(texts,"Right Click to delete belts on this gear")
     end
@@ -387,18 +388,24 @@ end
 
 placement.draw = function(state,mx,my,other_texts)
   local texts = {}
-  if state.selected_tool == "gear" then
-    texts = placement.draw_gear_tool_overlay(state,mx,my)
-  elseif state.selected_tool == "belt" then
-    texts = placement.draw_belt_tool_overlay(state,mx,my)
-  elseif state.selected_tool == "splitter" then
-    texts = placement.draw_splitter_tool_overlay(state,mx,my)
-  end
 
-  if internals.hovered_gear then
-    table.insert(texts, "")
-    table.insert(texts, "Gear size: " .. internals.hovered_gear.size)
-    table.insert(texts, "Gear speed: " .. internals.hovered_gear.current_speed)
+  local b = simulation.get_bounding_box(state)
+  if collisions.point_inside_boundary(mx,my,b.x,b.y,b.width,b.height) then
+
+    if state.selected_tool == "gear" then
+      texts = placement.draw_gear_tool_overlay(state,mx,my)
+    elseif state.selected_tool == "belt" then
+      texts = placement.draw_belt_tool_overlay(state,mx,my)
+    elseif state.selected_tool == "splitter" then
+      texts = placement.draw_splitter_tool_overlay(state,mx,my)
+    end
+
+    if internals.hovered_gear then
+      table.insert(texts, "")
+      table.insert(texts, "Gear size: " .. internals.hovered_gear.size)
+      table.insert(texts, "Gear speed: " .. internals.hovered_gear.current_speed)
+    end
+
   end
 
   local use_texts = texts
