@@ -34,6 +34,14 @@ function love.load()
   love.audio.play(bgm)
 end
 
+
+
+local rect_clicked = function(_x, _y, rect)
+  return _x >= rect[1] and _x <= rect[1] + rect[3] and _y >= rect[2] and _y <= rect[2] + rect[4]
+end
+
+
+
 function love.draw()
 
   renderer.render_gui_background()
@@ -45,7 +53,45 @@ function love.draw()
   --renderer.render_areas(state, camera)
   renderer.draw(camera, state)
 
-  placement.draw(state,mx,my,{})
+
+  local extra_lines = {}
+
+  local left_gui_buttons = renderer.get_left_button_rects()
+  local s_x, s_y = love.mouse.getPosition()
+  for name, rect in pairs(left_gui_buttons) do
+    if rect_clicked(s_x, s_y, rect) then
+      if name == "gear" then
+        table.insert(extra_lines, "Gear placement tool")
+        table.insert(extra_lines, "")
+        table.insert(extra_lines, "Gears can be connected to")
+        table.insert(extra_lines, "each other, and the speed")
+        table.insert(extra_lines, "will depend on the ratio of")
+        table.insert(extra_lines, "their sizes.")
+      end
+      if name == "belt" then
+        table.insert(extra_lines, "Belt placement tool")
+        table.insert(extra_lines, "")
+        table.insert(extra_lines, "Belts link gears directly,")
+        table.insert(extra_lines, "so the size of the gears doesn't")
+        table.insert(extra_lines, "affect the speed.")
+      end
+      if name == "splitter" then
+        table.insert(extra_lines, "Splitter placement tool")
+        table.insert(extra_lines, "")
+        table.insert(extra_lines, "Splitters have one input gear")
+        table.insert(extra_lines, "and two output gears. The outputs")
+        table.insert(extra_lines, "both spin at half the input speed.")
+      end
+      if name == "up" then
+        table.insert(extra_lines, "Move view up")
+      end
+      if name == "down" then
+        table.insert(extra_lines, "Move view down")
+      end
+    end
+  end
+
+  placement.draw(state,mx,my,extra_lines)
   camera:detach()
   --do window relative drawing here
   --renderer.render_money_amount(state)
@@ -73,6 +119,7 @@ function love.keypressed(key)
   move_camera(key)
 end
 
+
 function love.mousemoved(x,y)
   local w_x, w_y = camera:worldCoords(x, y)
   placement.mouse_moved(state,w_x,w_y)
@@ -85,9 +132,7 @@ end
 function love.mousepressed(x,y,button)
   local w_x, w_y = camera:worldCoords(x, y)
 
-  local rect_clicked = function(_x, _y, rect)
-    return _x >= rect[1] and _x <= rect[1] + rect[3] and _y >= rect[2] and _y <= rect[2] + rect[4]
-  end
+
 
   local buy_button = renderer.get_buy_button_rect()
   local left_gui_buttons = renderer.get_left_button_rects()
@@ -151,7 +196,6 @@ end
 
 local accumulatedDeltaTime = 0
 function love.update(deltaTime)
-
   accumulatedDeltaTime = accumulatedDeltaTime + deltaTime
 
   local tickTime = 1/60

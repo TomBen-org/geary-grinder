@@ -370,12 +370,13 @@ placement.draw = function(state,mx,my,other_texts)
     texts = placement.draw_splitter_tool_overlay(state,mx,my)
   end
 
-  for _, text in pairs(other_texts) do
-    table.insert(texts,text)
+  local use_texts = texts
+  if #other_texts > 0 then
+    use_texts = other_texts
   end
 
-  if #texts > 0 then
-    placement.draw_tooltip(mx,my,texts)
+  if #use_texts > 0 then
+    placement.draw_tooltip(mx,my,use_texts)
   end
 end
 
