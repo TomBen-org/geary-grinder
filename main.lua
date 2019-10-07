@@ -27,6 +27,11 @@ function love.load()
   constants.fonts['medium'] = love.graphics.newFont('/gfx/font-regular.ttf',16)
   constants.fonts['big'] = love.graphics.newFont('/gfx/font-regular.ttf',25)
   love.graphics.setFont(constants.fonts['small'])
+
+
+  local bgm = love.audio.newSource("/sfx/Gears of DAW.wav", "stream")
+  bgm:setLooping(true)
+  love.audio.play(bgm)
 end
 
 function love.draw()
