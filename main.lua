@@ -10,6 +10,8 @@ local constants = require('constants')
 local state
 local camera
 
+local win_screen
+
 function love.load()
   local screen_width, screen_height = love.graphics.getDimensions()
   state = simulation.create_state()
@@ -32,6 +34,8 @@ function love.load()
   local bgm = love.audio.newSource("/sfx/Gears of DAW.wav", "stream")
   bgm:setLooping(true)
   love.audio.play(bgm)
+
+  win_screen = love.graphics.newImage("/gfx/win_screen.png")
 end
 
 
@@ -43,6 +47,11 @@ end
 
 
 function love.draw()
+  if state.areas_available > #levels then
+    love.graphics.setColor{1,1,1}
+    love.graphics.draw(win_screen)
+    return
+  end
 
   renderer.render_gui_background()
 
