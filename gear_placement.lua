@@ -287,6 +287,12 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
     end
     local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
     love.graphics.circle("line",gx,gy,internals.new_gear_size*constants.size_mod,50)
+
+    table.insert(texts, "")
+    table.insert(texts, "Size: " .. internals.new_gear_size)
+    table.insert(texts, "")
+    table.insert(texts, "Parent size: " .. internals.selected_gear.size)
+    table.insert(texts, "Parent speed: " .. internals.selected_gear.current_speed)
   elseif internals.hovered_gear and
     not (internals.hovered_gear.type == "sink_part" or
     internals.hovered_gear.type == "splitter_input") then
@@ -311,6 +317,9 @@ placement.draw_gear_tool_overlay = function(state,mx,my)
     end
     local gx,gy = internals.new_gear_point.x, internals.new_gear_point.y
     love.graphics.circle("line",gx,gy,(internals.new_gear_size*constants.size_mod),50)
+
+    table.insert(texts, "")
+    table.insert(texts, "Size: " .. internals.new_gear_size)
   end
 
   return texts
@@ -368,6 +377,12 @@ placement.draw = function(state,mx,my,other_texts)
     texts = placement.draw_belt_tool_overlay(state,mx,my)
   elseif state.selected_tool == "splitter" then
     texts = placement.draw_splitter_tool_overlay(state,mx,my)
+  end
+
+  if internals.hovered_gear then
+    table.insert(texts, "")
+    table.insert(texts, "Gear size: " .. internals.hovered_gear.size)
+    table.insert(texts, "Gear speed: " .. internals.hovered_gear.current_speed)
   end
 
   local use_texts = texts

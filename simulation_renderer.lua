@@ -358,8 +358,8 @@ renderer.draw = function(camera, state)
     --  love.graphics.setColor(render_constants.colors["link"])
     --  love.graphics.line(component.position.x,component.position.y,component.child.position.x,component.child.position.y)
     --end
-    love.graphics.setColor{0,0,0}
-    love.graphics.print(tostring(component.size)..","..component.current_speed,component.position.x,component.position.y)
+    --love.graphics.setColor{0,0,0}
+    --love.graphics.print(tostring(component.size)..","..component.current_speed,component.position.x,component.position.y)
   end
 
   for _, gear in pairs(state.all_components) do
